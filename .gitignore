@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio project file
+*.Rproj
+
+# Quarto rendering artifacts
+*_files/
+*_cache/
+
+# Rendered output
+*.html
