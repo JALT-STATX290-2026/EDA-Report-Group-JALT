@@ -19,12 +19,30 @@ execute:
 
 # Introduction
 
-Introduce the data sets.
+This EDA report looks at polling data from...
+
+The data was collected by...
+
+`state_polls_2012.csv` and `state_polls_2016.csv` contain...
+
+These data sets contain the variables...
+
+An additional data set, `1976-2024-president.csv`, along with the file `codebook-us-president-1976-2020.md` is included.
 
 # Description of Data Cleaning
-What, why, how
+
+(What, why, how)
+
+Looking at missingness
+
+Extracting the state column
 
 # Exploratory Data Analysis
-Use summaries and visualisations to identify relationships in the data, and motivate your research questions
+
+(Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
+
+
+Here, maybe include our graphs from week 3 forum?
 
 # Research Questions
+
