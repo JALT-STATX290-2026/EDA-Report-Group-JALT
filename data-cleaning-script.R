@@ -3,6 +3,7 @@
 
 
 # Installing packages for cleaning ----------------------------------------
+
 library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
 library(lubridate)   # dates
@@ -81,7 +82,7 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
   )
 
 
-# Saving data sets as cvs in clean folder ---------------------------------
+# Saving data sets as csv in clean folder ---------------------------------
 
 write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
 write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
