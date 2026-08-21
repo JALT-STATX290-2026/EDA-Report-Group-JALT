@@ -1,5 +1,30 @@
 ---
 title: "EDA-Report-JALT"
-format: html
+subtitle: "STATX290 Statistical Practice Exploratory Data Analysis Report"
+author: "Team JALT - Jerry, Aysha, Lily, and Theo"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+    embed-resources: false
+    theme: cosmo
+execute:
+  warning: false
+  message: false
+  echo: true
 ---
 
+# Introduction
+
+Introduce the data sets.
+
+# Description of Data Cleaning
+What, why, how
+
+# Exploratory Data Analysis
+Use summaries and visualisations to identify relationships in the data, and motivate your research questions
+
+# Research Questions
