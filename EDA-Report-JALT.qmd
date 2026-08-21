@@ -69,5 +69,4 @@ polls_2012_long |> filter(year %in% c("2012")) |>
 
 # Research Questions
 
-- What other data might you collect to augment this dataset? Is it available?
-- Are there any ethical implications of the research questions we might ask of the data?
+- How representative were opinion polls of the election results?
