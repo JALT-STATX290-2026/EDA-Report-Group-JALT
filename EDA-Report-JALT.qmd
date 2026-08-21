@@ -52,6 +52,21 @@ Extracting the state column
 *What relationships can you observe visually?*
 Here, maybe include our graphs from week 3 forum?
 
+
+
+```{r}
+#| label: Candidates 2012 v Percentage (pre-polling)
+#| eval: false
+polls_2012_long |> filter(year %in% c("2012")) |>
+  ggplot() + 
+  geom_boxplot(aes(x = candidate, y = pct, fill = candidate)) +
+  labs(x = "Candidates 2012", y = "Percentage") + 
+  theme_bw()
+```
+
+
+
+
 # Research Questions
 
 - What other data might you collect to augment this dataset? Is it available?
