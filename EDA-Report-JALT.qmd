@@ -31,18 +31,28 @@ An additional data set, `1976-2024-president.csv`, along with the file `codebook
 
 # Description of Data Cleaning
 
-(What, why, how)
+- What does this data represent?
+- What is measured?
+- How was it collected?
 
-Looking at missingness
+*Is there any data missingness or other errors? How can this be corrected?*
+
+- Do the measurements make sense in context? (you might need to discuss with the instructor what to do if not)
 
 Extracting the state column
+```{r}
+
+```
+
 
 # Exploratory Data Analysis
 
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
 
-
+*What relationships can you observe visually?*
 Here, maybe include our graphs from week 3 forum?
 
 # Research Questions
 
+- What other data might you collect to augment this dataset? Is it available?
+- Are there any ethical implications of the research questions we might ask of the data?
