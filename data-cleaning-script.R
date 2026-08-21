@@ -80,4 +80,8 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
   )
 
 # save datasets (ASK MONDAY)
-write_csv(polls_long, "{clean_dir}/polls_long_clean.csv")
+write_csv(polls_long, "data/clean/polls_long_clean.csv")
+write_csv(polls_2012, "data/clean/polls_2012_clean.csv")
+write_csv(polls_2016, "data/clean/polls_2016_clean.csv")
+write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")
+write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")
