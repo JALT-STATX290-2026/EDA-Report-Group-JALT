@@ -5,7 +5,7 @@ This is the group assignment for STATX290 Statistical Practice: Exploratory Data
 ## Repository Structure
 
 ```         
-eda_project/
+EDA-Report-Group-JALT/
 ├── README.md                     <- this file
 ├── EDA-Report-JALT.qmd           <- report on how data was cleaned, and analysing polls
 ├── data-cleaning-script.R        <- R script which cleans polling data
