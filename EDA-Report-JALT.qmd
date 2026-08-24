@@ -33,6 +33,104 @@ An additional data set, `1976-2024-president.csv`, along with the file `codebook
 
 # Description of Data Cleaning
 
+```{r}
+#| label: setup
+
+# Installing packages for cleaning ----------------------------------------
+
+library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
+library(here)        # project-relative paths; don't use setwd()
+library(lubridate)   # dates
+library(glue)        # easy string manipulation
+
+# Set up directories ------------------------------------------------------
+
+raw_dir   <- here("data", "raw")
+clean_dir <- here("data", "clean")
+
+# Reading in raw data -----------------------------------------------------
+
+polls_2016_raw <- read_csv(glue("{raw_dir}/state_polls_2016.csv"))
+polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
+results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
+
+```
+
+```{r}
+#| label: clean-data-dates
+
+# Cleaning the datasets ---------------------------------------------------
+
+# Time to election
+# Define election day = first Tuesday after the first Monday in November.
+election_day <- c("2012" = as.Date("2012-11-06"),
+                  "2016" = as.Date("2016-11-08"))
+
+# Adding time to election as column to data sets
+polls_2016 <- polls_2016_raw |>
+  mutate(
+    start_date = as.Date(start_date),
+    end_date   = as.Date(end_date),
+    days_to_election = as.integer(election_day["2016"] - end_date)
+  )
+polls_2012 <- polls_2012_raw |>
+  mutate(
+    start_date = as.Date(start_date),
+    end_date   = as.Date(end_date),
+    days_to_election = as.integer(election_day["2012"] - end_date)
+  )
+```
+
+```{r}
+#| label: clean-data-extract-year-state
+# Extracting the year and state name for each row
+polls_2016 <- polls_2016_raw |>
+  mutate(
+    year = str_extract(poll_info, "^\\d{4}"),
+    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
+  )
+polls_2012 <- polls_2012_raw |>
+  mutate(
+    year = str_extract(poll_info, "^\\d{4}"),
+    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
+  )
+```
+
+```{r}
+#| label: clean-data-long
+
+# Creating longer data sets with each candidate on a new row
+candidate_cols_2016 <- c("Trump", "Clinton", "Johnson", "McMullin", 
+                         "Other", "Undecided")
+polls_2016_long <- polls_2016 |>
+  pivot_longer(cols = all_of(candidate_cols_2016),
+               values_transform = as.numeric,
+               names_to = "candidate", values_to = "pct")
+
+candidate_cols_2012 <- c("Obama", "Romney", "Other", "Undecided")
+polls_2012_long <- polls_2012 |>
+  pivot_longer(cols = all_of(candidate_cols_2012),
+               values_transform = as.numeric,
+               names_to = "candidate", values_to = "pct")
+
+# Combining datasets into long set ----------------------------------------
+# Removing negative population values
+polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
+  mutate(sample_size = na_if(sample_size, -1),
+         across(c(sample_subpopulation, mode, partisanship,
+                  partisan_affiliation, state, candidate),
+                factor)
+  )
+
+# Saving data sets as csv in clean folder ---------------------------------
+
+write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
+write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
+write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
+write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
+write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
+```
+
 - What does this data represent?
 - What is measured?
 - How was it collected?
@@ -41,13 +139,12 @@ An additional data set, `1976-2024-president.csv`, along with the file `codebook
 
 - Do the measurements make sense in context? (you might need to discuss with the instructor what to do if not)
 
-Extracting the state column
-```{r}
 
-```
 
 
 # Exploratory Data Analysis
+
+
 
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
 
@@ -58,7 +155,7 @@ Here, maybe include our graphs from week 3 forum?
 
 ```{r}
 #| label: Candidates 2012 v Percentage (pre-polling)
-#| eval: false
+
 polls_2012_long |> filter(year %in% c("2012")) |>
   ggplot() + 
   geom_boxplot(aes(x = candidate, y = pct, fill = candidate)) +
@@ -69,10 +166,12 @@ polls_2012_long |> filter(year %in% c("2012")) |>
 Discussion: From this data set we could explore how accurate the pre-polling data was to the outcome data from the results data set. This may need to be changed because the American voting system depends on the state and each state had different amount of polls which means states that has less polls or was not included will not be represented. This will bias the pre-polling towards highly polled states.
 
 ```{r}
+#| label: plot-obama-votes-over-time
+
 polls_2012 |> ggplot(aes(y = Obama,
                          x = as.integer(difftime(ymd("2012-11-06"), end_date, units = "days")))
 ) + 
-  geom_point(color = "darkcyan", shape = 1, stroke = 1) +
+  geom_point(color = "darkcyan", shape = 1, stroke = 1, alpha = 0.6) +
   labs(x = "Time until election (days)",
        y = "Percent voted for Obama",
        title = str_wrap("Relationship between percentage of people 
@@ -84,6 +183,8 @@ polls_2012 |> ggplot(aes(y = Obama,
 Discussion
 
 ```{r}
+#| label: plot-partisan-affilitation-votes-for-obama
+
 polls_2012_long |> filter(candidate %in% c('Obama')) |>
   ggplot() +
   geom_boxplot(aes(x = partisan_affiliation, y = pct, fill = partisan_affiliation)) +
@@ -96,6 +197,8 @@ polls_2012_long |> filter(candidate %in% c('Obama')) |>
 Discussion
 
 ```{r}
+#| label: plot-voting-methods-for-romney
+
 ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
   geom_boxplot() +
   labs(x = "Method of Voting", y = "Percentage of Votes for Romney") +
