@@ -180,7 +180,7 @@ polls_2012 |> ggplot(aes(y = Obama,
   scale_y_continuous(limits = c(0, NA))
 ```
 
-Discussion
+Discussion: The purpose of this graph to to see how pre-polling votes change over time for a Obama in 2012. Just by looking at the data there does not seem to be much change in opinions over time. The main aspect to see is that more polls were completed closer to the election date. We may be able to find a better trend with more analysis. Exploring voting opinions over time may be limited by the lack of data for more than 300 days before election. Depending what we are trying to explore we may not have not enough data.
 
 ```{r}
 #| label: plot-partisan-affilitation-votes-for-obama
