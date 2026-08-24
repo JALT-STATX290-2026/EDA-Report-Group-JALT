@@ -68,6 +68,41 @@ polls_2012_long |> filter(year %in% c("2012")) |>
 
 Discussion: From this data set we could explore how accurate the pre-polling data was to the outcome data from the results data set. This may need to be changed because the American voting system depends on the state and each state had different amount of polls which means states that has less polls or was not included will not be represented. This will bias the pre-polling towards highly polled states.
 
+```{r}
+polls_2012 |> ggplot(aes(y = Obama,
+                         x = as.integer(difftime(ymd("2012-11-06"), end_date, units = "days")))
+) + 
+  geom_point(color = "darkcyan", shape = 1, stroke = 1) +
+  labs(x = "Time until election (days)",
+       y = "Percent voted for Obama",
+       title = str_wrap("Relationship between percentage of people 
+       who voted for Obama and time until election day")) +
+  scale_x_reverse() +
+  scale_y_continuous(limits = c(0, NA))
+```
+
+Discussion
+
+```{r}
+polls_2012_long |> filter(candidate %in% c('Obama')) |>
+  ggplot() +
+  geom_boxplot(aes(x = partisan_affiliation, y = pct, fill = partisan_affiliation)) +
+  labs(x = "Partisan Affilitation", y = "Percentage of Poll for Obama") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+```
+
+Discussion
+
+```{r}
+ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
+  geom_boxplot() +
+  labs(x = "Method of Voting", y = "Percentage of Votes for Romney") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
 
 
 
