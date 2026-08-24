@@ -19,13 +19,15 @@ execute:
 
 # Introduction
 
-This EDA report looks at polling data from...
+This EDA report looks at polling data from 2012 and 2016 US pre-election polling. 
 
-The data was collected by...
+The data was obtained from HuffPost Pollster at https://projects.huffingtonpost.com. There are three data sets:
 
-`state_polls_2012.csv` and `state_polls_2016.csv` contain...
+- `state_polls_2012.csv`
+- `state_polls_2016.csv`
+- `1976-2024-president.csv`
 
-These data sets contain the variables...
+In the raw data sets, each row represents a separate poll containing the candidates for that year, the polling dates, 
 
 An additional data set, `1976-2024-president.csv`, along with the file `codebook-us-president-1976-2020.md` is included.
 
