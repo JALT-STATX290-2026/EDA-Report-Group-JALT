@@ -157,6 +157,23 @@ write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
 
 # Exploratory Data Analysis
 
+```{r}
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2016."
+polls_2016 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2012."
+polls_2012 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+```
 
 
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
