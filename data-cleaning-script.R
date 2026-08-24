@@ -45,12 +45,12 @@ polls_2012 <- polls_2012_raw |>
   )
 
 # Extracting the year and candidate name for each row
-polls_2016 <- polls_2016_raw |>
+polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
     state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
   )
-polls_2012 <- polls_2012_raw |>
+polls_2012 <- polls_2012 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
     state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
