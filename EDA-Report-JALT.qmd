@@ -64,6 +64,8 @@ polls_2012_long |> filter(year %in% c("2012")) |>
   theme_bw()
 ```
 
+Discussion: From this data set we could explore how accurate the pre-polling data was to the outcome data from the results data set. This may need to be changed because the American voting system depends on the state and each state had different amount of polls which means states that has less polls or was not included will not be represented. This will bias the pre-polling towards highly polled states.
+
 
 
 
