@@ -21,19 +21,19 @@ execute:
 
 This EDA report looks at polling data from 2012 and 2016 US pre-election polling. 
 
-The data was obtained from HuffPost Pollster at https://projects.huffingtonpost.com. There are three data sets:
+The data was obtained from HuffPost Pollster at [https://projects.huffingtonpost.com](https://projects.huffingtonpost.com). There are three data sets:
 
 - `state_polls_2012.csv`
 - `state_polls_2016.csv`
 - `1976-2024-president.csv`
 
-In the raw data sets, each row represents a separate poll containing the candidates for that year, the polling dates, 
+In the raw data sets `state_polls_2012.csv` and `state_polls_2016.csv`, each row represents a separate poll containing the candidates for that year, poll ID, pollster, the polling start and end dates, sample sub-population and size, polling mode (method), partisanship, and partisan affiliation.
 
-An additional data set, `1976-2024-president.csv`, along with the file `codebook-us-president-1976-2020.md` is included.
+The data set `1976-2024-president.csv` contains the state-level results of elections from 1976 to 2024. The included file `codebook-us-president-1976-2020.md` provides detailed descriptions of each variable in this data set. It is important to note that the codebook is not up to date, as the title date range does not match the data range. 
 
 # Description of Data Cleaning
 
-Setting up libraries and reading in data.
+Set up the required libraries and read in the raw data.
 
 ```{r}
 #| label: setup
@@ -87,7 +87,9 @@ polls_2012 <- polls_2012_raw |>
 ```
 
 
-The `poll_info` is muddled. From it, extract the state and year and create new variables.
+From it, extract the state and year and create new variables.
+
+In the first column `poll_info`, the text string contains . The state could be it's own variable column.
 
 ```{r}
 #| label: clean-data-extract-year-state
