@@ -277,7 +277,7 @@ discuss if there is anything to explore
 limitations
 causation v correlation 
 
-Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards democrat and republican candidates. The biggest limitation of this is the american voting system as it is not about overall percentages but about how many states a party wins with different states being worth more, additionally state wins are not about number of votes in a state but about Jerry meandering ????. Which cannot be seen explored with the given data. I do not understand how american elections work. A similar graph can be made for other years. 
+Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards democrat and republican candidates. The biggest limitation of this is the american voting system as it is not about overall percentages but about how many states a party wins with different states being worth more, additionally state wins are not about number of votes in a state but about Jerry meandering ????. Which cannot be seen explored with the given data. I do not understand how american elections work. A similar graph can be made for other years. These results can be compared to the polling data. 
 
 
 ```{r}
@@ -289,9 +289,7 @@ results_1976_2024_raw |>
   theme_bw() +
   theme(legend.position = "bottom")
 ```
-Column graph of percentage of votes by state over time. Democrat and republican parties got majority of the votes. Does not appear to be an 
-
-Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards democrat and republican candidates. The biggest limitation of this is the american voting system as it is not about overall percentages but about how many states a party wins with different states being worth more, additionally state wins are not about number of votes in a state but about Jerry meandering ????. Which cannot be seen explored with the given data. I do not understand how american elections work. A similar graph can be made for other years. 
+Column graph of percentage of votes by state over time. Democrat and republican parties got majority of the votes. Does not appear to be an trend of time. This graph has similar limitations about weighting of states. 
 
 ```{r}
 #| label: col-graph-results-2016-percentage-votesin each state
@@ -302,6 +300,8 @@ results_1976_2024_raw |> filter(year %in% (2016)) |>
   theme_bw() +
   theme(legend.position = "bottom")
 ```
+Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at thins by state because of the way the american election system works. This graph would be best to compare with the polling data., 
+
 
 ```{r}
 #| label: col-graph-polling-2016-percentage-in each state
