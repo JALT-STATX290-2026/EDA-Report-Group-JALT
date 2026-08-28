@@ -237,6 +237,50 @@ ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
 ```
 
 
+```{r}
+#| label: plot-results-2016-percentage-of-state-votes
+results_1976_2024_raw |> filter(year %in% (2016)) |>
+  ggplot(aes(x = party_simplified, y = (candidatevotes/totalvotes), fill = party_simplified)) +
+  geom_boxplot() +
+  labs(x = "Party", y = "Percentage of Votes by State") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+```{r}
+#| label: plot-results-party-results-over-time
+results_1976_2024_raw |>
+  ggplot(aes(x = as.numeric(year), y = (candidatevotes/totalvotes), fill = party_simplified)) +
+  geom_col() +
+  labs(x = "Year", y = "Percentage of Votes by State", fill = "Party") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+#| label: col-graph-results-2016-percentage-votesin each state
+results_1976_2024_raw |> filter(year %in% (2016)) |> 
+  ggplot(aes(x = state_po, y = (candidatevotes/totalvotes), fill = party_simplified)) +
+  geom_col() +
+  labs(x = "State", y = "Percentage of Votes") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: col-graph-polling-2016-percentage-in each state
+polls_2016_long |>
+  ggplot(aes(x = state, y = mean(pct, group_by((state))), fill = candidate)) +
+  geom_col() +
+  labs(x = "State", y = "Percentage of poll") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+polls_2016_long |> group_by((state)) |>
+  mean(pct, na.rm = TRUE)
+
+```
 
 
 # Research Questions
