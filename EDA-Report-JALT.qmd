@@ -21,19 +21,19 @@ execute:
 
 This EDA report looks at polling data from 2012 and 2016 US pre-election polling. 
 
-The data was obtained from HuffPost Pollster at https://projects.huffingtonpost.com. There are three data sets:
+The data was obtained from HuffPost Pollster at [https://projects.huffingtonpost.com](https://projects.huffingtonpost.com). There are three datasets:
 
 - `state_polls_2012.csv`
 - `state_polls_2016.csv`
 - `1976-2024-president.csv`
 
-In the raw data sets, each row represents a separate poll containing the candidates for that year, the polling dates, 
+In the raw datasets `state_polls_2012.csv` and `state_polls_2016.csv`, each row represents a separate poll containing the candidates for that year, poll ID, pollster, the polling start and end dates, sample sub-population and size, polling mode (method), partisanship, and partisan affiliation.
 
-An additional data set, `1976-2024-president.csv`, along with the file `codebook-us-president-1976-2020.md` is included.
+The dataset `1976-2024-president.csv` contains the state-level results of elections from 1976 to 2024. The included file `codebook-us-president-1976-2020.md` provides detailed descriptions of each variable in this dataset. It is important to note that the codebook is not up to date, as the title date range does not match the data range. 
 
 # Description of Data Cleaning
 
-Setting up libraries and reading in data.
+Set up the required libraries and read in the raw data.
 
 ```{r}
 #| label: setup
@@ -59,25 +59,24 @@ results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 ```
 
 
-Extracting the time to election and creating a new variable.
+The time recording in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
 
 ```{r}
-#| label: clean-data-dates
+#| label: clean-data-days-to-election
 
-# Cleaning the datasets ---------------------------------------------------
-
-# Time to election
+# Days to election
 # Define election day = first Tuesday after the first Monday in November.
 election_day <- c("2012" = as.Date("2012-11-06"),
                   "2016" = as.Date("2016-11-08"))
 
-# Adding time to election as column to data sets
+# Adding time to election as column to datasets
 polls_2016 <- polls_2016_raw |>
   mutate(
     start_date = as.Date(start_date),
     end_date   = as.Date(end_date),
     days_to_election = as.integer(election_day["2016"] - end_date)
   )
+
 polls_2012 <- polls_2012_raw |>
   mutate(
     start_date = as.Date(start_date),
@@ -87,16 +86,20 @@ polls_2012 <- polls_2012_raw |>
 ```
 
 
-The `poll_info` is muddled. From it, extract the state and year and create new variables.
+In the first column `poll_info`, the text string contains useful information about the **year** and **state** of each poll. However, the format of this variable makes filtering by either of these factors tedious. So, we should extract the year and state, and create a variable column for each. We do this for both the 2012 and 2016 datasets.
+
+Although it may seem redundant to include the year as a separate variable now, when the datasets are combined later on, it will be useful to already have the distinction between the two be made.
 
 ```{r}
 #| label: clean-data-extract-year-state
+
 # Extracting the year and state name for each row
 polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
     state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
   )
+
 polls_2012 <- polls_2012 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
@@ -104,15 +107,13 @@ polls_2012 <- polls_2012 |>
   )
 ```
 
-
-Rather than having each candidate as a separate variable, create a new row for each candidate in each poll.
-
-The sample size is entered as "-1" for 2 polls, one from 2012 and one from 2016. These should be NAs, because the "-1" is being treated as an actual data point and is skewing the mean slightly negatively.
+The 2012 and 2016 poll files have **different candidate columns** (Obama/Romney vs Trump/Clinton/Johnson/McMullin) and different column orders. To analyse them together, we need reshape this to a tidy long format with one row per poll per candidate. In this way, we can better compare the two datasets.
 
 ```{r}
-#| label: clean-data-long
+#| label: clean-data-pivot-long
+#| warning: false
 
-# Creating longer data sets with each candidate on a new row
+# Creating longer datasets with each candidate on a new row
 candidate_cols_2016 <- c("Trump", "Clinton", "Johnson", "McMullin", 
                          "Other", "Undecided")
 polls_2016_long <- polls_2016 |>
@@ -125,6 +126,28 @@ polls_2012_long <- polls_2012 |>
   pivot_longer(cols = all_of(candidate_cols_2012),
                values_transform = as.numeric,
                names_to = "candidate", values_to = "pct")
+```
+
+
+From inspection, some `sample_size` values are entered as "-1". These should be NAs, because "-1" is being treated as an actual data point and is skewing the mean slightly negatively. First, we need to check how many rows are affected.
+
+```{r}
+#| label: clean-data-sample-size-nas
+
+polls_2012_long |>
+  filter(sample_size == -1) |> count()
+
+polls_2016_long |>
+  filter(sample_size == -1) |> count()
+```
+
+
+There are 4 rows in `polls_2012_long` and 6 in `polls_2016_long` with a negative sample size. We transform these into `NA`s, and combine the two datasets into one long set.
+
+We also transform the variables `sample_subpopulation`, `mode`, `partisanship`, `partisan_affiliation`, `state`, and `candidate` to be **factors rather than strings**, to make them more easily comparable.
+
+```{r}
+#| label: clean-data-combine-long
 
 # Combining datasets into long set ----------------------------------------
 # Removing negative population values
@@ -135,7 +158,7 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
                 factor)
   )
 
-# Saving data sets as csv in clean folder ---------------------------------
+# Saving datasets as csv in clean folder ---------------------------------
 
 write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
 write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
@@ -224,7 +247,7 @@ polls_2012_long |> filter(candidate %in% c('Obama')) |>
   scale_fill_viridis_d()
 ```
 
-Discussion
+Discussion: This graph focuses on the votes for a specific candidate in a election for each of the partisan affiliations. This will give incite into whether participation affiliation of the pollster will influence the percentage of the votes for each party. This graph is interesting because there are differences in the median vote percentages but also variety in the size of the interquartile ranges. This may be caused by sample size difference though because none partisan affiliation is the most common type and has the largest interquartile range. This may also be influenced by location as where the pollster are located may effect votes.
 
 ```{r}
 #| label: plot-voting-methods-for-romney
@@ -236,6 +259,7 @@ ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
   theme(legend.position = "none")
 ```
 
+Discussion: The method of voting influences the percentage of votes for a candidate as the median changes with the method of voting and along with the interquartile range. There is also overlap in the methods as mixed could include multiple. To improve this graph Live Phone/Online could be included in mixed as there looks to be only 1 data point. It will also need to be considered the different demographics for each methods. For example the demographic that will answer by mail will be different from the ones through the internet. This would mean that the correlation may be within demographics not the methods of voting. 
 
 ```{r}
 #| label: plot-results-2016-percentage-of-state-votes
