@@ -18,4 +18,4 @@ EDA-Report-Group-JALT/
     └── clean/                    <- cleaned data files used for anaylsis
 ```
 
-`data-cleaning-script.R` contains the code to clean the data. This only needs to be ran once. The code is also contained in parts in `EDA-Report-JALT.qmd`. 
+`data-cleaning-script.R` contains only the code to clean the data. This only needs to be run once. All of the code is also contained in parts in `EDA-Report-JALT.qmd`. The code will load all required libraries, but will not install any missing ones.
