@@ -81,6 +81,21 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
                 factor)
   )
 
+#Cleaning the results dataset ----------------------------------------
+
+results_1976_2024_clean <- results_1976_2024_raw |>
+  select(-c(state_fips, state_ic, state_cen, notes, office, state_po)) |>
+  mutate(
+    across(c(state, party_simplified, party_detailed), ~.x |> str_to_kebab() |> factor()),
+    percent_voted = round((candidatevotes / totalvotes) * 100, 2),
+    has_slash = str_detect(version, "/"), # temporary column used for the next line
+    version = coalesce(
+      dmy(str_replace_all(if_else(has_slash, version, NA_character_), "/", "-")),
+      ymd(if_else(has_slash, NA_character_, version))
+      )
+  ) |>
+  select(-c(has_slash, candidatevotes, totalvotes)) |>
+  filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
 
 # Saving data sets as csv in clean folder ---------------------------------
 
@@ -89,3 +104,4 @@ write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
 write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
+write_csv(results_1976_2024_clean, "data/clean/results_1976_2024_clean.csv")  # results_1976_2024
