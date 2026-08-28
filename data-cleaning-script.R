@@ -22,6 +22,11 @@ polls_2016_raw <- read_csv(glue("{raw_dir}/state_polls_2016.csv"))
 polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
+income_raw <- read_csv(glue("{raw_dir}/income_by_state.csv"), skip = 3, col_names = TRUE)
+poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
+unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
+smokefree_rate_raw <- read_csv(glue("{raw_dir}/smokefree_rate_by_state.csv"), skip = 4, col_names = TRUE)
+education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, col_names = TRUE)
 
 # Cleaning the datasets ---------------------------------------------------
 
@@ -81,7 +86,7 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
                 factor)
   )
 
-#Cleaning the results dataset ----------------------------------------
+#Cleaning the results dataset ---------------------------------------------
 
 results_1976_2024_clean <- results_1976_2024_raw |>
   select(-c(state_fips, state_ic, state_cen, notes, office, state_po)) |>
@@ -97,6 +102,59 @@ results_1976_2024_clean <- results_1976_2024_raw |>
   select(-c(has_slash, candidatevotes, totalvotes)) |>
   filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
 
+#Cleaning socioeconomic datasets, then combining into one ----------------
+
+  #List of states used for the following function
+state_list <- c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+                "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+                "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+                "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
+                "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+                "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+                "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee",
+                "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+                "Wisconsin", "Wyoming")
+
+
+  #Quick cleaning function. Only keeps the main 50 states, formats column names correctly and
+  #removes the area code column
+fast_clean <- function(raw_dataset)
+{
+  new_dataset <- raw_dataset |> clean_names() |>
+    filter(state %in% state_list == TRUE) |>
+    select(-fips) |>
+    arrange(state) |>
+    mutate(
+      state = factor(str_to_kebab(state))
+    )
+  return(new_dataset)
+}
+
+#Basic formatting and cleaning, then renaming columns appropriately and removing any unnecessary columns
+income <- income_raw |> fast_clean() |>
+  rename(family_income = dollars) |>
+  select(-3)
+
+poverty <- poverty_raw |> fast_clean() |>
+  rename(percent_families_below_poverty = percent) |>
+  select(-c(3, 4))
+
+unemployment <- unemployment_raw |> fast_clean() |>
+  rename(percent_unemployed = percent) |>
+  select(-c(3, 4))
+
+smokefree_rate <- smokefree_rate_raw |> fast_clean() |>
+  rename(percent_smokefree = percent_1)
+
+education <- education_raw |> fast_clean() |>
+  rename(percent_uneducated = percent) |>
+  select(-people_education_less_than_9th_grade, -c(3, 4))
+
+#Combines all datasets into one
+df_list <- list(income, poverty, unemployment, smokefree_rate, education)
+
+socioeconomic_data_clean <- df_list |> reduce(left_join, by = "state")
+
 # Saving data sets as csv in clean folder ---------------------------------
 
 write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
@@ -105,3 +163,4 @@ write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
 write_csv(results_1976_2024_clean, "data/clean/results_1976_2024_clean.csv")  # results_1976_2024
+write_csv(socioeconomic_data_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioeconomic data
