@@ -293,12 +293,14 @@ Column graph of percentage of votes by state over time. Democrat and republican 
 
 ```{r}
 #| label: col-graph-results-2016-percentage-votesin each state
+
 results_1976_2024_raw |> filter(year %in% (2016)) |> 
-  ggplot(aes(x = state_po, y = (candidatevotes/totalvotes), fill = party_simplified)) +
+  ggplot(aes(x = state, y = (candidatevotes/totalvotes), fill = party_simplified)) +
   geom_col() +
-  labs(x = "State", y = "Percentage of Votes") +
+  labs(x = "State", y = "Percentage of Votes (%)", fill = "Party", title = "Percentage of votes per party in each state") +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = element_text(hjust = 0.5)) 
 ```
 Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at thins by state because of the way the american election system works. This graph would be best to compare with the polling data., 
 
