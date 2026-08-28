@@ -224,7 +224,7 @@ polls_2012_long |> filter(candidate %in% c('Obama')) |>
   scale_fill_viridis_d()
 ```
 
-Discussion
+Discussion: This graph focuses on the votes for a specific candidate in a election for each of the partisan affiliations. This will give incite into whether participation affiliation of the pollster will influence the percentage of the votes for each party. This graph is interesting because there are differences in the median vote percentages but also variety in the size of the interquartile ranges. This may be caused by sample size difference though because none partisan affiliation is the most common type and has the largest interquartile range. This may also be influenced by location as where the pollster are located may effect votes.
 
 ```{r}
 #| label: plot-voting-methods-for-romney
@@ -236,6 +236,7 @@ ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
   theme(legend.position = "none")
 ```
 
+Discussion: The method of voting influences the percentage of votes for a candidate as the median changes with the method of voting and along with the interquartile range. There is also overlap in the methods as mixed could include multiple. To improve this graph Live Phone/Online could be included in mixed as there looks to be only 1 data point. It will also need to be considered the different demographics for each methods. For example the demographic that will answer by mail will be different from the ones through the internet. This would mean that the correlation may be within demographics not the methods of voting. 
 
 
 
