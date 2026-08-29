@@ -2,12 +2,13 @@
 #| eval: false
 
 
-# Installing packages for cleaning ----------------------------------------
+# Loading packages for cleaning ----------------------------------------
 
 library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
 library(lubridate)   # dates
 library(glue)        # easy string manipulation
+library(janitor)     # for the clean_names() function
 
 
 # Set up directories ------------------------------------------------------
@@ -53,12 +54,25 @@ polls_2012 <- polls_2012_raw |>
 polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
-    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
+    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)") |>
+      factor() |>
+      fct_recode("washington-dc" = "washington-d-c"),
+    sample_size = na_if(sample_size, -1),
+    across(
+      c(sample_subpopulation, mode, partisanship, partisan_affiliation),
+      factor
+      )
   )
 polls_2012 <- polls_2012 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
-    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
+    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)") |>
+      factor(),
+    sample_size = na_if(sample_size, -1),
+    across(
+      c(sample_subpopulation, mode, partisanship, partisan_affiliation),
+      factor
+      )
   )
 
 # Creating longer data sets with each candidate on a new row
@@ -77,56 +91,45 @@ polls_2012_long <- polls_2012 |>
 
 
 # Combining datasets into long set ----------------------------------------
-# Removing negative population values
 
 polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
-  mutate(sample_size = na_if(sample_size, -1),
-         across(c(sample_subpopulation, mode, partisanship,
-                  partisan_affiliation, state, candidate),
-                factor)
-  )
+  mutate(candidate = factor(candidate))
 
 #Cleaning the results dataset ---------------------------------------------
 
 results_1976_2024_clean <- results_1976_2024_raw |>
   select(-c(state_fips, state_ic, state_cen, notes, office, state_po)) |>
   mutate(
-    across(c(state, party_simplified, party_detailed), ~.x |> str_to_kebab() |> factor()),
+    across(
+      c(state, party_simplified, party_detailed),
+      ~.x |> str_to_kebab() |> factor()
+      ),
     percent_voted = round((candidatevotes / totalvotes) * 100, 2),
-    has_slash = str_detect(version, "/"), # temporary column used for the next line
+    has_slash = str_detect(version, "/"), #temporary column used to convert version to date
     version = coalesce(
       dmy(str_replace_all(if_else(has_slash, version, NA_character_), "/", "-")),
       ymd(if_else(has_slash, NA_character_, version))
-      )
+      ),
+    state = state |> fct_recode("washington-dc" = "district-of-columbia")
   ) |>
   select(-c(has_slash, candidatevotes, totalvotes)) |>
   filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
 
 #Cleaning socioeconomic datasets, then combining into one ----------------
 
-  #List of states used for the following function
-state_list <- c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
-                "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
-                "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
-                "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
-                "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-                "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
-                "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee",
-                "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-                "Wisconsin", "Wyoming")
-
-
-  #Quick cleaning function. Only keeps the main 50 states, formats column names correctly and
+  #Quick cleaning function for socioeconomic data. Drops Puerto Rico, formats column names correctly and
   #removes the area code column
 fast_clean <- function(raw_dataset)
 {
   new_dataset <- raw_dataset |> clean_names() |>
-    filter(state %in% state_list == TRUE) |>
+    filter(!(state %in% c("Puerto Rico", "United States"))) |>
     select(-fips) |>
     arrange(state) |>
     mutate(
-      state = factor(str_to_kebab(state))
-    )
+      state = factor(str_to_kebab(state)) |> 
+        fct_recode("washington-dc" = "district-of-columbia")
+    ) |>
+    na.omit()
   return(new_dataset)
 }
 
@@ -153,7 +156,7 @@ education <- education_raw |> fast_clean() |>
 #Combines all datasets into one
 df_list <- list(income, poverty, unemployment, smokefree_rate, education)
 
-socioeconomic_data_clean <- df_list |> reduce(left_join, by = "state")
+socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
 
 # Saving data sets as csv in clean folder ---------------------------------
 
@@ -163,4 +166,4 @@ write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
 write_csv(results_1976_2024_clean, "data/clean/results_1976_2024_clean.csv")  # results_1976_2024
-write_csv(socioeconomic_data_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioeconomic data
+write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioeconomic data
