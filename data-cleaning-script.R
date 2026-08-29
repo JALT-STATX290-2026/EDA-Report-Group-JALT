@@ -56,23 +56,13 @@ polls_2016 <- polls_2016 |>
     year = str_extract(poll_info, "^\\d{4}"),
     state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)") |>
       factor() |>
-      fct_recode("washington-dc" = "washington-d-c"),
-    sample_size = na_if(sample_size, -1),
-    across(
-      c(sample_subpopulation, mode, partisanship, partisan_affiliation),
-      factor
-      )
+      fct_recode("washington-dc" = "washington-d-c")
   )
 polls_2012 <- polls_2012 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
     state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)") |>
-      factor(),
-    sample_size = na_if(sample_size, -1),
-    across(
-      c(sample_subpopulation, mode, partisanship, partisan_affiliation),
-      factor
-      )
+      factor()
   )
 
 # Creating longer data sets with each candidate on a new row
@@ -93,7 +83,13 @@ polls_2012_long <- polls_2012 |>
 # Combining datasets into long set ----------------------------------------
 
 polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
-  mutate(candidate = factor(candidate))
+  mutate(
+    sample_size = na_if(sample_size, -1),
+         across(
+           c(candidate, sample_subpopulation, mode, partisanship, partisan_affiliation),
+           factor
+          )
+        )
 
 #Cleaning the results dataset ---------------------------------------------
 
@@ -112,7 +108,7 @@ results_1976_2024_clean <- results_1976_2024_raw |>
       ),
     state = state |> fct_recode("washington-dc" = "district-of-columbia")
   ) |>
-  select(-c(has_slash, candidatevotes, totalvotes)) |>
+  select(-c(has_slash, totalvotes)) |>
   filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
 
 #Cleaning socioeconomic datasets, then combining into one ----------------
