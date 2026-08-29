@@ -152,7 +152,7 @@ polls_2016_long |>
 
 There are 4 rows in `polls_2012_long` and 6 in `polls_2016_long` with a negative sample size, which we converted to `NA`s.
 
-We also converted the variables `sample_subpopulation`, `mode`, `partisanship`, `partisan_affiliation`, `state`, and `candidate` to **factors rather than characters** so that they can be used more easily, mainly for plotting. We then combined the two datasets into one dataset containing opinion polling results from both 2012 and 2016.
+We also converted the variables `sample_subpopulation`, `mode`, `partisanship`, `partisan_affiliation`, `state`, and `candidate` to **factors rather than characters** so that they can be used more easily, mainly for plotting. We then combined the two datasets into one dataset containing opinion polling results from both 2012 and 2016. Finally, all datasets were saved into the clean data folder.
 
 ```{r}
 #| label: clean-data-combine-long
@@ -248,7 +248,7 @@ education <- education_raw |> fast_clean() |>
   select(-people_education_less_than_9th_grade, -c(3, 4))
 ```
 
-Finally, all datasets were combined into one, called `socioeconomic_clean`.
+Finally, all datasets were combined into one, called `socioeconomic_clean` and was then saved in to the clean data folder.
 
 ```{r}
 #| label: socioeconomic-combine-datasets
@@ -256,6 +256,7 @@ Finally, all datasets were combined into one, called `socioeconomic_clean`.
 df_list <- list(income, poverty, unemployment, smokefree_rate, education)
 
 socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
+write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioeconomic data
 ```
 
 
