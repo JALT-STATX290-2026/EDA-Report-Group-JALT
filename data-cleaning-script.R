@@ -81,6 +81,71 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
                 factor)
   )
 
+<<<<<<< HEAD
+=======
+#Cleaning the results dataset ---------------------------------------------
+
+results_1976_2024_clean <- results_1976_2024_raw |>
+  select(-c(state_fips, state_ic, state_cen, notes, office, state_po)) |>
+  mutate(
+    across(
+      c(state, party_simplified, party_detailed),
+      ~.x |> str_to_kebab() |> factor()
+      ),
+    percent_voted = round((candidatevotes / totalvotes) * 100, 7),
+    has_slash = str_detect(version, "/"), #temporary column used to convert version to date
+    version = coalesce(
+      dmy(str_replace_all(if_else(has_slash, version, NA_character_), "/", "-")),
+      ymd(if_else(has_slash, NA_character_, version))
+      ),
+    state = state |> fct_recode("washington-dc" = "district-of-columbia")
+  ) |>
+  select(-c(has_slash, totalvotes)) |>
+  filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
+
+#Cleaning socioeconomic datasets, then combining into one ----------------
+
+  #Quick cleaning function for socioeconomic data. Drops Puerto Rico, formats column names correctly and
+  #removes the area code column
+fast_clean <- function(raw_dataset)
+{
+  new_dataset <- raw_dataset |> clean_names() |>
+    filter(!(state %in% c("Puerto Rico", "United States"))) |>
+    select(-fips) |>
+    arrange(state) |>
+    mutate(
+      state = factor(str_to_kebab(state)) |> 
+        fct_recode("washington-dc" = "district-of-columbia")
+    ) |>
+    na.omit()
+  return(new_dataset)
+}
+
+#Basic formatting and cleaning, then renaming columns appropriately and removing any unnecessary columns
+income <- income_raw |> fast_clean() |>
+  rename(family_income = dollars) |>
+  select(-3)
+
+poverty <- poverty_raw |> fast_clean() |>
+  rename(percent_families_below_poverty = percent) |>
+  select(-c(3, 4))
+
+unemployment <- unemployment_raw |> fast_clean() |>
+  rename(percent_unemployed = percent) |>
+  select(-c(3, 4))
+
+smokefree_rate <- smokefree_rate_raw |> fast_clean() |>
+  rename(percent_smokefree = percent_1)
+
+education <- education_raw |> fast_clean() |>
+  rename(percent_uneducated = percent) |>
+  select(-people_education_less_than_9th_grade, -c(3, 4))
+
+#Combines all datasets into one
+df_list <- list(income, poverty, unemployment, smokefree_rate, education)
+
+socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
+>>>>>>> 71faa386855c2be8b4e191d93558c32334b4d6ab
 
 # Saving data sets as csv in clean folder ---------------------------------
 
