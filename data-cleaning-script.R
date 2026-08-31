@@ -8,7 +8,7 @@ library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
 library(lubridate)   # dates
 library(glue)        # easy string manipulation
-
+library(janitor)     # for the clean_names() function
 
 # Set up directories ------------------------------------------------------
 

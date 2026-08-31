@@ -31,39 +31,8 @@ In the raw datasets `state_polls_2012.csv` and `state_polls_2016.csv`, each row 
 
 The dataset `1976-2024-president.csv` contains the state-level results of elections from 1976 to 2024. The included file `codebook-us-president-1976-2020.md` provides detailed descriptions of each variable in this dataset. It is important to note that the codebook is not up to date, as the title date range does not match the data range. 
 
-NOTES
-## Discuss
-What population is captured in a **poll** row versus a **results** row? Who may be *excluded*
-from each? For the polling datasets, distinguish the target population (who should be included in the survey) from the sampling frame (who is actually surveyed).
-:::
+The pre-polling data set includes samples of the American population separated by state to try represent the population of Americans who will vote in the upcoming election. The results data set includes the entire population of Americans who did vote in the election that year. The pre-polling data included the percentage of votes for each candidate while the results data included the count of number of votes for a candidate not as a percentage. Subsequently, from pre-polling data being recorded as percentages there is rounding error included, seen in the total percentage higher then 100%. The pre-polling data also included an undecided option which is not in the results data. It should be noted that some of the factors measured in the pre-polling data sets had uneven amount of observations and it is not disclosed if all polls had the option of other. This can be seen in the partisan affiliations where there were roughly twice as many Demarcates then Republican polls (~200 v ~100). 
 
-*Your answer:*
-Poll rows: state, Candidates, poll_id, pollster, start/end date, sample sub [population, mode, sample size, partisanship, affiliation
-Results: Year, state, candidate who won in place, party details, candidate votes, total votes 
-
-The candidate columns in the polls are reported **percentages, not counts**.
-Who chose the denominator? Are they percentages of all respondents, or of
-decided voters only? How would you tell?
-:::
-
-*Your answer:*
-They are obviously percentages because the rows add up to (roughly, given rounding) 100, and don't correspond to any total number.
-All voters, decided and undecided, are included in the percentage (that's how percentages work).
-
-The columns `sample_subpopulation`, `mode`, `partisanship`, and `partisan_affiliation` describe characteristics of the polls. How much variation is in these columns? Are there any potential problems for statistical inference you should note?
-:::
-
-*Your answer:*
-It depends if it represents the population of voting Americans accurately as a good sample. 
-The majority of those polled had no affiliation, and there were roughly twice as many Dems and Reps (~200 v ~100)
-
-## Discuss
-Polls are weighted and adjusted by each pollster using (mostly) undisclosed procedures.
-What does the polling dataset tell you about the polling procedures? What decisions/rules were likely to be undisclosed?
-How might this affect subsequent analysis?
-:::
-
-*Your answer:* They rounded the percentages so they no longer add nicely to 100%. Undisclosed decision about if people don't answer/ don't answer properly. Unclear if all polls had the option to choose other or undecided.
 
 # Description of Data Cleaning
 
