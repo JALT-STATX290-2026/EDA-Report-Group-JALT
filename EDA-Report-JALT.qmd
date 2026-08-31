@@ -179,9 +179,9 @@ write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
 ```
 
-Next, we also cleaned `results_1976_2024_raw`. Firstly, there were several pointless variables, which were `state_fips`, `state_ic`, `state_cen`,`state_po`, `notes`, and `office`. The latter four were mainly for state identification purposes and not useful for statistical analysis purposes at all. The variables `notes` and `office` were also useless as they either contained all NA's or the same value for all observations. Then, the names each level of the categorical variables (`state`, `party_simplified`, `party_detailed`) were first cleaned using `str_to_kebab` before being converted to factors. Additionally, the variable `percent_voted` was created to replace `candidate_votes` by dividing `candidate_votes` by `total_votes` as it is more useful for analysis and also saves us from calculating the percentage every time we need it.
+We also need to clean `results_1976_2024_raw`. There are several pointless variables, `state_fips`, `state_ic`, `state_cen`,`state_po`, `notes`, and `office`. The latter four are mainly for state identification purposes and not useful for statistical analysis purposes at all. The variables `notes` and `office` are also useless as they either contain all NA's or the same value for all observations. Then, the names each level of the categorical variables (`state`, `party_simplified`, `party_detailed`) are first cleaned using `str_to_kebab` before being converted to factors. Additionally, we create the variable `percent_voted` to replace `candidate_votes` by dividing `candidate_votes` by `total_votes` as it is more useful for analysis and also saves us from calculating the percentage every time we need it.
 
-Next, the process for cleaning the `version` variable was significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we started by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This was used to create two new columns which were then became the new `version` variable. The first was defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. These were then combined into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values were omitted.
+The process for cleaning the `version` variable is significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we start by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This creates two new columns which  then become the new `version` variable. The first is defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. We then combine these into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values are omitted.
 
 ```{r}
 #| label: clean-results-1976-2024
@@ -205,9 +205,9 @@ results_1976_2024_clean <- results_1976_2024_raw |>
   na.omit()
 ```
 
-Now, the socioeconomic datasets gathered externally contained mean family income, percentage of families living below the poverty line, percentage of unemployment, percentage of population covered by 100% smokefree bar laws, and the percentage of population with less than a 9th grade education, all by state. These were used as they could provide valuable insights when analysed together with the polling data.
+The socioeconomic datasets gathered externally contain mean family income, percentage of families living below the poverty line, percentage of unemployment, percentage of population covered by 100% smokefree bar laws, and the percentage of population with less than a 9th grade education, all by state. We use these datasets as they could provide valuable insights when analysed together with the polling data.
 
-Upon inspection, they all contained the `fips` variable which represented the state code. This was removed as it is not useful to us. Additionally, they all contained a row for the United States as a whole and Puerto Rico, which were both not included in the other datasets and were also removed accordingly. Lastly, the `state` variable was converted to a factor where the level "district-of-columbia" was then recoded as "washington-dc" to be consistent with the other datasets. As all datasets share these problems, the `fast_clean()` function was created to simplify the cleaning code.
+Upon inspection, they all contain the `fips` variable which represented the state code. We remove this as it is not useful to us. Additionally, they all contain a row for the United States as a whole and Puerto Rico, which are both not included in the other datasets and we also remove accordingly. Lastly, we convert the `state` variable to a factor where the level "district-of-columbia" is recoded as "washington-dc" to be consistent with the other datasets. As all datasets share these problems, we create the `fast_clean()` function to simplify the cleaning code.
 
 ```{r}
 #| label: socioeconomic-data-clean
@@ -227,7 +227,7 @@ fast_clean <- function(raw_dataset)
 }
 ```
 
-Next, this function was used to clean all datasets, where variables were renamed accordingly to be more descriptive, and also removing any redundant variables.
+We use this function to clean all datasets, where variables are renamed accordingly to be more descriptive, and also remove any redundant variables.
 
 ```{r}
 #| label: socioeconomic-data-clean-continued
@@ -252,7 +252,7 @@ education <- education_raw |> fast_clean() |>
   select(-people_education_less_than_9th_grade, -c(3, 4))
 ```
 
-Finally, all datasets were combined into one, called `socioeconomic_clean` and was then saved in to the clean data folder.
+Finally, we combine all datasets into one, called `socioeconomic_clean` and save it in to the clean data folder.
 
 ```{r}
 #| label: socioeconomic-combine-datasets
