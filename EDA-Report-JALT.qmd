@@ -298,27 +298,13 @@ write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioecon
 ```
 
 
-- What does this data represent?
-- What is measured?
-- How was it collected?
-
-*Is there any data missingness or other errors? How can this be corrected?*
-
-- Do the measurements make sense in context? (you might need to discuss with the instructor what to do if not)
-
-
+All of the datasets are now clean and structured in a way that is ready for exploration and analysis.
 
 
 # Exploratory Data Analysis
 
-(Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
-
-*What relationships can you observe visually?*
-Here, maybe include our graphs from week 3 forum?
-
 ```{r}
 #| label: Count of Polls per State
-#| echo: FALSE
 
 polls_2016 |> count(state, sort = TRUE) |> print(n = Inf)
 
