@@ -282,6 +282,14 @@ write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioecon
 *What relationships can you observe visually?*
 Here, maybe include our graphs from week 3 forum?
 
+```{r}
+#| label: Count of Polls per State
+
+polls_2016 |> count(state, sort = TRUE) |> print(n = Inf)
+
+polls_2012 |> count(state, sort = TRUE) |> print(n = Inf)
+```
+Discussion: In 2016, 51 states were included and in 2012, 48 states were included in the pre-polling data. There was also a large range of the number of polls per state. For example, in 2012 there were 110 polls from Ohio compared to the single poll from Alabama. It means that any nation wide statement would be more biased towards the states that had more polls.
 
 
 ```{r}
