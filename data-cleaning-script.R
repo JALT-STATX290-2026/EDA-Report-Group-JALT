@@ -100,7 +100,7 @@ results_1976_2024_clean <- results_1976_2024_raw |>
       c(state, party_simplified, party_detailed),
       ~.x |> str_to_kebab() |> factor()
       ),
-    percent_voted = round((candidatevotes / totalvotes) * 100, 2),
+    percent_voted = round((candidatevotes / totalvotes) * 100, 7),
     has_slash = str_detect(version, "/"), #temporary column used to convert version to date
     version = coalesce(
       dmy(str_replace_all(if_else(has_slash, version, NA_character_), "/", "-")),
