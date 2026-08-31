@@ -282,10 +282,20 @@ write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioecon
 *What relationships can you observe visually?*
 Here, maybe include our graphs from week 3 forum?
 
+```{r}
+#| label: Count of Polls per State
+#| echo: FALSE
+
+polls_2016 |> count(state, sort = TRUE) |> print(n = Inf)
+
+polls_2012 |> count(state, sort = TRUE) |> print(n = Inf)
+```
+Discussion: In 2016, 51 states were included and in 2012, 48 states were included in the pre-polling data. There was also a large range of the number of polls per state. For example, in 2012 there were 110 polls from Ohio compared to the single poll from Alabama. It means that any nation wide statement would be more biased towards the states that had more polls.
 
 
 ```{r}
 #| label: Candidates 2012 v Percentage (pre-polling)
+#| echo: FALSE
 
 polls_2012_long |> filter(year %in% c("2012")) |>
   ggplot() + 
@@ -298,6 +308,7 @@ Discussion: From this data set we could explore how accurate the pre-polling dat
 
 ```{r}
 #| label: plot-obama-votes-over-time
+#| echo: FALSE
 
 polls_2012 |> ggplot(aes(y = Obama,
                          x = as.integer(difftime(ymd("2012-11-06"), end_date, units = "days")))
@@ -315,6 +326,8 @@ Discussion: The purpose of this graph to to see how pre-polling votes change ove
 
 ```{r}
 #| label: time-plot
+#| echo: FALSE
+
 #| fig-cap: "Temporal distribution of polling effort, 2016."
 polls_2016 |>
   ggplot(aes(days_to_election)) +
@@ -335,6 +348,7 @@ Discussion: Histogram of days to election versus number of polls taken. More pol
 
 ```{r}
 #| label: plot-partisan-affilitation-votes-for-obama
+#| echo: FALSE
 
 polls_2012_long |> filter(candidate %in% c('Obama')) |>
   ggplot() +
@@ -349,6 +363,7 @@ Discussion: This graph focuses on the votes for a specific candidate in a electi
 
 ```{r}
 #| label: plot-voting-methods-for-romney
+#| echo: FALSE
 
 ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
   geom_boxplot() +
@@ -361,6 +376,8 @@ Discussion: The method of voting influences the percentage of votes for a candid
 
 ```{r}
 #| label: plot-results-2016-percentage-of-state-votes
+#| echo: FALSE
+
 results_1976_2024_clean |> filter(year %in% (2016)) |>
   ggplot(aes(x = party_simplified, y = (percent_voted), fill = party_simplified)) +
   geom_boxplot() +
@@ -374,6 +391,8 @@ Discussion: Histogram of percentage of votes in each state for each party. Graph
 
 ```{r}
 #| label: plot-results-party-results-over-time
+#| echo: FALSE
+
 results_1976_2024_clean |>
   ggplot(aes(x = as.numeric(year), y = (candidatevotes/1000000), fill = party_simplified)) +
   geom_col() +
@@ -387,6 +406,7 @@ Discussion: Column graph of votes over time. Democrat and republican parties got
 
 ```{r}
 #| label: col-graph-results-2016-percentage-votesin each state
+#| echo: FALSE
 
 results_1976_2024_clean |> filter(year %in% (2016)) |> 
   ggplot(aes(x = state, y = percent_voted, fill = party_simplified)) +
