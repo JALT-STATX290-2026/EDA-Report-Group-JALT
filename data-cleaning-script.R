@@ -148,9 +148,9 @@ education <- education_raw |> fast_clean() |>
   select(-people_education_less_than_9th_grade, -c(3, 4))
 
 incarceration <- incarceration_raw |> fast_clean() |>
-  rename(percent_guardian_incaracerated = percent_1) |>
+  rename(percent_guardian_incarcerated = percent_1) |>
   mutate(
-    percent_guardian_incaracerated = percent_guardian_incaracerated |>
+    percent_guardian_incarcerated = percent_guardian_incarcerated |>
       str_remove_all("!") |> as.numeric()
   )
 
