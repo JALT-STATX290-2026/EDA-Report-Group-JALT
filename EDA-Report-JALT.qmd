@@ -291,6 +291,9 @@ polls_2012 |>
   labs(x = "Days to election (binned by week)", y = "Number of polls")
 ```
 
+Histogram of days to election versus number of polls taken. More polls were undertaken closer to the election day. 
+
+
 
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
 
@@ -376,14 +379,15 @@ Histogram of percentage of votes in each state for each party. Graph indicates m
 ```{r}
 #| label: plot-results-party-results-over-time
 results_1976_2024_raw |>
-  ggplot(aes(x = as.numeric(year), y = (candidatevotes), fill = party_simplified)) +
+  ggplot(aes(x = as.numeric(year), y = (candidatevotes/1000000), fill = party_simplified)) +
   geom_col() +
-  labs(x = "Year", y = "Number of votes", fill = "Party") +
+  labs(x = "Year", y = "Number of votes (millions)", fill = "Party") +
+    scale_y_continuous() +
   theme_bw() +
   theme(legend.position = "bottom")
 ```
 
-Discussion: Column graph of percentage of votes by state over time. Democrat and republican parties got majority of the votes. Does not appear to be an trend of time. This graph may not represent the data acurately as the y axis is between 0 and 50 percent when including al votes should include 100% of votes. This graph has similar limitations about the weighting of states. 
+Discussion: Column graph of votes over time. Democrat and republican parties got majority of the votes. Trend of more people voting over time probably due to population increase. Does not appear to be an trend over time of what parties people vote for. This graph has similar limitations about the weighting of states. 
 
 ```{r}
 #| label: col-graph-results-2016-percentage-votesin each state
@@ -405,7 +409,7 @@ Discussion: Column graph of percentage of votes by state. Democrat and republica
 #| eval: FALSE
 polls_2016_long |>
   ggplot(aes(x = state, y = mean(pct, group_by((state))), fill = candidate)) +
-  geom_col() +
+  geom_bar() +
   labs(x = "State", y = "Percentage of poll") +
   theme_bw() +
   theme(legend.position = "bottom")
