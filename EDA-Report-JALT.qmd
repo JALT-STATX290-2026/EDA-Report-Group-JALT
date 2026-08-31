@@ -273,28 +273,6 @@ write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioecon
 
 # Exploratory Data Analysis
 
-```{r}
-#| label: time-plot
-#| fig-cap: "Temporal distribution of polling effort, 2016."
-polls_2016 |>
-  ggplot(aes(days_to_election)) +
-  geom_histogram(binwidth = 7) +
-  scale_x_reverse() +
-  labs(x = "Days to election (binned by week)", y = "Number of polls")
-
-#| label: time-plot
-#| fig-cap: "Temporal distribution of polling effort, 2012."
-polls_2012 |>
-  ggplot(aes(days_to_election)) +
-  geom_histogram(binwidth = 7) +
-  scale_x_reverse() +
-  labs(x = "Days to election (binned by week)", y = "Number of polls")
-```
-
-Histogram of days to election versus number of polls taken. More polls were undertaken closer to the election day. 
-
-
-
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
 
 *What relationships can you observe visually?*
@@ -330,6 +308,26 @@ polls_2012 |> ggplot(aes(y = Obama,
 ```
 
 Discussion: The purpose of this graph to to see how pre-polling votes change over time for a Obama in 2012. Just by looking at the data there does not seem to be much change in opinions over time. The main aspect to see is that more polls were completed closer to the election date. We may be able to find a better trend with more analysis. Exploring voting opinions over time may be limited by the lack of data for more than 300 days before election. Depending what we are trying to explore we may not have not enough data.
+
+```{r}
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2016."
+polls_2016 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2012."
+polls_2012 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+```
+
+Discussion: Histogram of days to election versus number of polls taken. More polls were undertaken closer to the election day. This graph shows very similar data as the Relationship between percentage of people who voted for Obama and time until election day
 
 ```{r}
 #| label: plot-partisan-affilitation-votes-for-obama
