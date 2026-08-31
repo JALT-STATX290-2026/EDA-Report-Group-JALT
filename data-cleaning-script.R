@@ -23,7 +23,7 @@ polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
 # Read in external data
-income_raw <- read_csv(glue("{raw_dir}/income_by_state.csv"), skip = 3, col_names = TRUE)
+income_raw <- read_csv(glue("{raw_dir}/median_household_income.csv"), skip = 4, col_names = TRUE)
 poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
 unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
 smokefree_rate_raw <- read_csv(glue("{raw_dir}/smokefree_rate_by_state.csv"), skip = 4, col_names = TRUE)
@@ -129,7 +129,7 @@ fast_clean <- function(raw_dataset)
 
 #Basic formatting and cleaning, then renaming columns appropriately and removing any unnecessary columns
 income <- income_raw |> fast_clean() |>
-  rename(family_income = dollars) |>
+  rename(median_household_income = dollars) |>
   select(-3)
 
 poverty <- poverty_raw |> fast_clean() |>
@@ -167,4 +167,4 @@ write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
 write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
-
+write_csv(socioeconomic_clean, "data/clean/socioeconomic_clean.csv") #socioeconomic data
