@@ -36,28 +36,29 @@ The dataset `1976-2024-president.csv` contains the state-level results of electi
 Set up the required libraries and read in the raw data.
 
 ```{r}
-#| label: setup
-
-# Installing packages for cleaning ----------------------------------------
+#| label: setup-libraries
 
 library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
 library(lubridate)   # dates
 library(glue)        # easy string manipulation
 library(janitor)     # for the clean_names() function
+```
 
-# Set up directories ------------------------------------------------------
 
+```{r}
+#| label: setup-read-data
+
+# Set up directories
 raw_dir   <- here("data", "raw")
 clean_dir <- here("data", "clean")
 
-# Reading in raw data -----------------------------------------------------
-
+# Read in raw data
 polls_2016_raw <- read_csv(glue("{raw_dir}/state_polls_2016.csv"))
 polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
-  #External data
+# Read in external data
 income_raw <- read_csv(glue("{raw_dir}/income_by_state.csv"), skip = 3, col_names = TRUE)
 poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
 unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
@@ -66,7 +67,7 @@ education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, co
 
 ```
 
-
+The raw data needs cleaning to make it workable.
 The time recording in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
 
 ```{r}
