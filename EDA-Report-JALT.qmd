@@ -37,6 +37,7 @@ Set up the required libraries and read in the raw data.
 
 ```{r}
 #| label: setup-libraries
+#| echo: FALSE
 
 library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
@@ -67,18 +68,18 @@ education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, co
 
 ```
 
-The raw data needs cleaning to make it workable.
-The time recording in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
+The raw data needs cleaning to make it workable. We need to alter existing variables, add additional variables, and manage missingness.
+
+The **time recording** in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
 
 ```{r}
 #| label: clean-data-days-to-election
 
-# Days to election
 # Define election day = first Tuesday after the first Monday in November.
 election_day <- c("2012" = as.Date("2012-11-06"),
                   "2016" = as.Date("2016-11-08"))
 
-# Adding time to election as column to datasets
+# Add time to election as column to datasets
 polls_2016 <- polls_2016_raw |>
   mutate(
     start_date = as.Date(start_date),
@@ -102,7 +103,7 @@ Although it may seem redundant to include the year as a separate variable now, w
 ```{r}
 #| label: clean-data-extract-year-state
 
-# Extracting the year and state name for each row
+# Extract the year and state name for each row
 polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
@@ -122,7 +123,7 @@ The 2012 and 2016 poll files have **different candidate columns** (Obama/Romney 
 #| label: clean-data-pivot-long
 #| warning: false
 
-# Creating longer datasets with each candidate on a new row
+# Create longer datasets with each candidate on a new row
 candidate_cols_2016 <- c("Trump", "Clinton", "Johnson", "McMullin", 
                          "Other", "Undecided")
 polls_2016_long <- polls_2016 |>
@@ -158,16 +159,18 @@ We also converted the variables `sample_subpopulation`, `mode`, `partisanship`, 
 ```{r}
 #| label: clean-data-combine-long
 
-# Combining datasets into long set ----------------------------------------
-# Removing negative population values
+# Combine datasets into long set and remove negative population values
 polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
   mutate(sample_size = na_if(sample_size, -1),
          across(c(sample_subpopulation, mode, partisanship,
                   partisan_affiliation, state, candidate),
                 factor)
   )
+```
 
-# Saving datasets as csv in clean folder ---------------------------------
+```{r}
+#| label: save-data-clean
+#| echo: FALSE
 
 write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
 write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
