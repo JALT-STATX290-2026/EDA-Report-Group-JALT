@@ -22,6 +22,14 @@ polls_2016_raw <- read_csv(glue("{raw_dir}/state_polls_2016.csv"))
 polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
+# Read in external data
+income_raw <- read_csv(glue("{raw_dir}/income_by_state.csv"), skip = 3, col_names = TRUE)
+poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
+unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
+smokefree_rate_raw <- read_csv(glue("{raw_dir}/smokefree_rate_by_state.csv"), skip = 4, col_names = TRUE)
+education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, col_names = TRUE)
+incarceration_raw <- read_csv(glue("{raw_dir}/percent_children_with_incarcerated_guardian.csv"), skip = 4, col_names = TRUE)
+
 
 # Cleaning the datasets ---------------------------------------------------
 
@@ -81,8 +89,6 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
                 factor)
   )
 
-<<<<<<< HEAD
-=======
 #Cleaning the results dataset ---------------------------------------------
 
 results_1976_2024_clean <- results_1976_2024_raw |>
@@ -141,11 +147,18 @@ education <- education_raw |> fast_clean() |>
   rename(percent_uneducated = percent) |>
   select(-people_education_less_than_9th_grade, -c(3, 4))
 
+incarceration <- incarceration_raw |> fast_clean() |>
+  rename(percent_guardian_incaracerated = percent_1) |>
+  mutate(
+    percent_guardian_incaracerated = percent_guardian_incaracerated |>
+      str_remove_all("!") |> as.numeric()
+  )
+
 #Combines all datasets into one
-df_list <- list(income, poverty, unemployment, smokefree_rate, education)
+df_list <- list(income, poverty, unemployment, smokefree_rate, education, incarceration)
 
 socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
->>>>>>> 71faa386855c2be8b4e191d93558c32334b4d6ab
+
 
 # Saving data sets as csv in clean folder ---------------------------------
 
