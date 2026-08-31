@@ -424,7 +424,8 @@ Discussion: Column graph of percentage of votes by state. Democrat and republica
 
 # Research Questions
 
-- How representative were opinion polls of the election results?
+- How representative were the opinion polls of the election results?
+- Which socioeconomic factors are the most reliable and important predictors of election results?
 
 # Bibliography
 
