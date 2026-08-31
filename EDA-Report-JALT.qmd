@@ -376,9 +376,9 @@ Histogram of percentage of votes in each state for each party. Graph indicates m
 ```{r}
 #| label: plot-results-party-results-over-time
 results_1976_2024_raw |>
-  ggplot(aes(x = as.numeric(year), y = (candidatevotes/totalvotes), fill = party_simplified)) +
+  ggplot(aes(x = as.numeric(year), y = (candidatevotes), fill = party_simplified)) +
   geom_col() +
-  labs(x = "Year", y = "Percentage of Votes by State", fill = "Party") +
+  labs(x = "Year", y = "Number of votes", fill = "Party") +
   theme_bw() +
   theme(legend.position = "bottom")
 ```
