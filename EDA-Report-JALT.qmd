@@ -36,28 +36,30 @@ The dataset `1976-2024-president.csv` contains the state-level results of electi
 Set up the required libraries and read in the raw data.
 
 ```{r}
-#| label: setup
-
-# Installing packages for cleaning ----------------------------------------
+#| label: setup-libraries
+#| echo: FALSE
 
 library(tidyverse)   # dplyr, ggplot2, tidyr, readr, stringr, forcats
 library(here)        # project-relative paths; don't use setwd()
 library(lubridate)   # dates
 library(glue)        # easy string manipulation
 library(janitor)     # for the clean_names() function
+```
 
-# Set up directories ------------------------------------------------------
 
+```{r}
+#| label: setup-read-data
+
+# Set up directories
 raw_dir   <- here("data", "raw")
 clean_dir <- here("data", "clean")
 
-# Reading in raw data -----------------------------------------------------
-
+# Read in raw data
 polls_2016_raw <- read_csv(glue("{raw_dir}/state_polls_2016.csv"))
 polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
-  #External data
+# Read in external data
 income_raw <- read_csv(glue("{raw_dir}/income_by_state.csv"), skip = 3, col_names = TRUE)
 poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
 unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
@@ -66,18 +68,18 @@ education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, co
 
 ```
 
+The raw data needs cleaning to make it workable. We need to alter existing variables, add additional variables, and manage missingness.
 
-The time recording in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
+The **time recording** in the polling data is arbitrary. It is more informative define a variable that counts down to the election date, as follows.
 
 ```{r}
 #| label: clean-data-days-to-election
 
-# Days to election
 # Define election day = first Tuesday after the first Monday in November.
 election_day <- c("2012" = as.Date("2012-11-06"),
                   "2016" = as.Date("2016-11-08"))
 
-# Adding time to election as column to datasets
+# Add time to election as column to datasets
 polls_2016 <- polls_2016_raw |>
   mutate(
     start_date = as.Date(start_date),
@@ -101,7 +103,7 @@ Although it may seem redundant to include the year as a separate variable now, w
 ```{r}
 #| label: clean-data-extract-year-state
 
-# Extracting the year and state name for each row
+# Extract the year and state name for each row
 polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
@@ -121,7 +123,7 @@ The 2012 and 2016 poll files have **different candidate columns** (Obama/Romney 
 #| label: clean-data-pivot-long
 #| warning: false
 
-# Creating longer datasets with each candidate on a new row
+# Create longer datasets with each candidate on a new row
 candidate_cols_2016 <- c("Trump", "Clinton", "Johnson", "McMullin", 
                          "Other", "Undecided")
 polls_2016_long <- polls_2016 |>
@@ -157,16 +159,18 @@ We also converted the variables `sample_subpopulation`, `mode`, `partisanship`, 
 ```{r}
 #| label: clean-data-combine-long
 
-# Combining datasets into long set ----------------------------------------
-# Removing negative population values
+# Combine datasets into long set and remove negative population values
 polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
   mutate(sample_size = na_if(sample_size, -1),
          across(c(sample_subpopulation, mode, partisanship,
                   partisan_affiliation, state, candidate),
                 factor)
   )
+```
 
-# Saving datasets as csv in clean folder ---------------------------------
+```{r}
+#| label: save-data-clean
+#| echo: FALSE
 
 write_csv(polls_long, "data/clean/polls_long_clean.csv")    # combined date
 write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
@@ -175,9 +179,9 @@ write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
 ```
 
-Next, we also cleaned `results_1976_2024_raw`. Firstly, there were several pointless variables, which were `state_fips`, `state_ic`, `state_cen`,`state_po`, `notes`, and `office`. The latter four were mainly for state identification purposes and not useful for statistical analysis purposes at all. The variables `notes` and `office` were also useless as they either contained all NA's or the same value for all observations. Then, the names each level of the categorical variables (`state`, `party_simplified`, `party_detailed`) were first cleaned using `str_to_kebab` before being converted to factors. Additionally, the variable `percent_voted` was created to replace `candidate_votes` by dividing `candidate_votes` by `total_votes` as it is more useful for analysis and also saves us from calculating the percentage every time we need it.
+We also need to clean `results_1976_2024_raw`. There are several pointless variables, `state_fips`, `state_ic`, `state_cen`,`state_po`, `notes`, and `office`. The latter four are mainly for state identification purposes and not useful for statistical analysis purposes at all. The variables `notes` and `office` are also useless as they either contain all NA's or the same value for all observations. Then, the names each level of the categorical variables (`state`, `party_simplified`, `party_detailed`) are first cleaned using `str_to_kebab` before being converted to factors. Additionally, we create the variable `percent_voted` to replace `candidate_votes` by dividing `candidate_votes` by `total_votes` as it is more useful for analysis and also saves us from calculating the percentage every time we need it.
 
-Next, the process for cleaning the `version` variable was significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we started by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This was used to create two new columns which were then became the new `version` variable. The first was defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. These were then combined into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values were omitted.
+The process for cleaning the `version` variable is significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we start by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This creates two new columns which  then become the new `version` variable. The first is defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. We then combine these into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values are omitted.
 
 ```{r}
 #| label: clean-results-1976-2024
@@ -201,9 +205,9 @@ results_1976_2024_clean <- results_1976_2024_raw |>
   na.omit()
 ```
 
-Now, the socioeconomic datasets gathered externally contained mean family income, percentage of families living below the poverty line, percentage of unemployment, percentage of population covered by 100% smokefree bar laws, and the percentage of population with less than a 9th grade education, all by state. These were used as they could provide valuable insights when analysed together with the polling data.
+The socioeconomic datasets gathered externally contain mean family income, percentage of families living below the poverty line, percentage of unemployment, percentage of population covered by 100% smokefree bar laws, and the percentage of population with less than a 9th grade education, all by state. We use these datasets as they could provide valuable insights when analysed together with the polling data.
 
-Upon inspection, they all contained the `fips` variable which represented the state code. This was removed as it is not useful to us. Additionally, they all contained a row for the United States as a whole and Puerto Rico, which were both not included in the other datasets and were also removed accordingly. Lastly, the `state` variable was converted to a factor where the level "district-of-columbia" was then recoded as "washington-dc" to be consistent with the other datasets. As all datasets share these problems, the `fast_clean()` function was created to simplify the cleaning code.
+Upon inspection, they all contain the `fips` variable which represented the state code. We remove this as it is not useful to us. Additionally, they all contain a row for the United States as a whole and Puerto Rico, which are both not included in the other datasets and we also remove accordingly. Lastly, we convert the `state` variable to a factor where the level "district-of-columbia" is recoded as "washington-dc" to be consistent with the other datasets. As all datasets share these problems, we create the `fast_clean()` function to simplify the cleaning code.
 
 ```{r}
 #| label: socioeconomic-data-clean
@@ -223,7 +227,7 @@ fast_clean <- function(raw_dataset)
 }
 ```
 
-Next, this function was used to clean all datasets, where variables were renamed accordingly to be more descriptive, and also removing any redundant variables.
+We use this function to clean all datasets, where variables are renamed accordingly to be more descriptive, and also remove any redundant variables.
 
 ```{r}
 #| label: socioeconomic-data-clean-continued
@@ -248,7 +252,7 @@ education <- education_raw |> fast_clean() |>
   select(-people_education_less_than_9th_grade, -c(3, 4))
 ```
 
-Finally, all datasets were combined into one, called `socioeconomic_clean` and was then saved in to the clean data folder.
+Finally, we combine all datasets into one, called `socioeconomic_clean` and save it in to the clean data folder.
 
 ```{r}
 #| label: socioeconomic-combine-datasets
@@ -272,28 +276,6 @@ write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioecon
 
 
 # Exploratory Data Analysis
-
-```{r}
-#| label: time-plot
-#| fig-cap: "Temporal distribution of polling effort, 2016."
-polls_2016 |>
-  ggplot(aes(days_to_election)) +
-  geom_histogram(binwidth = 7) +
-  scale_x_reverse() +
-  labs(x = "Days to election (binned by week)", y = "Number of polls")
-
-#| label: time-plot
-#| fig-cap: "Temporal distribution of polling effort, 2012."
-polls_2012 |>
-  ggplot(aes(days_to_election)) +
-  geom_histogram(binwidth = 7) +
-  scale_x_reverse() +
-  labs(x = "Days to election (binned by week)", y = "Number of polls")
-```
-
-Histogram of days to election versus number of polls taken. More polls were undertaken closer to the election day. 
-
-
 
 (Use summaries and visualisations to identify relationships in the data, and motivate your research questions)
 
@@ -332,6 +314,26 @@ polls_2012 |> ggplot(aes(y = Obama,
 Discussion: The purpose of this graph to to see how pre-polling votes change over time for a Obama in 2012. Just by looking at the data there does not seem to be much change in opinions over time. The main aspect to see is that more polls were completed closer to the election date. We may be able to find a better trend with more analysis. Exploring voting opinions over time may be limited by the lack of data for more than 300 days before election. Depending what we are trying to explore we may not have not enough data.
 
 ```{r}
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2016."
+polls_2016 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+
+#| label: time-plot
+#| fig-cap: "Temporal distribution of polling effort, 2012."
+polls_2012 |>
+  ggplot(aes(days_to_election)) +
+  geom_histogram(binwidth = 7) +
+  scale_x_reverse() +
+  labs(x = "Days to election (binned by week)", y = "Number of polls")
+```
+
+Discussion: Histogram of days to election versus number of polls taken. More polls were undertaken closer to the election day. This graph shows very similar data as the Relationship between percentage of people who voted for Obama and time until election day
+
+```{r}
 #| label: plot-partisan-affilitation-votes-for-obama
 
 polls_2012_long |> filter(candidate %in% c('Obama')) |>
@@ -367,13 +369,7 @@ results_1976_2024_clean |> filter(year %in% (2016)) |>
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ```
 
-Discussion: 
-WHats in graph
-discuss if there is anything to explore 
-limitations
-causation v correlation 
-
-Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards Democrat and Republican candidates. The biggest limitation of this graph is if it was to be used to calculate the percentages of votes for a candidate overall will be different to the American voting system which gives a different weight per state by population, which is not represented in the historgram. This could be adjusted for by giving each state a weight. A similar graph can be made for other years. These results can be compared to the polling data. 
+Discussion: Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards Democrat and Republican candidates. The biggest limitation of this graph is if it was to be used to calculate the percentages of votes for a candidate overall will be different to the American voting system which gives a different weight per state by population, which is not represented in the historgram. This could be adjusted for by giving each state a weight. A similar graph can be made for other years. These results can be compared to the polling data. 
 
 
 ```{r}
@@ -403,21 +399,6 @@ results_1976_2024_clean |> filter(year %in% (2016)) |>
 
 Discussion: Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at data by state because of the way the American election system works. The District of Columbia stands out as the large majority of their votes were for Democrat compared to the other states for this year.  This graph would be best to compare with the pre-polling data or to compare over time. 
 
-
-```{r}
-#| label: col-graph-polling-2016-percentage-in each state
-#| eval: FALSE
-polls_2016_long |>
-  ggplot(aes(x = state, y = mean(pct, group_by((state))), fill = candidate)) +
-  geom_bar() +
-  labs(x = "State", y = "Percentage of poll") +
-  theme_bw() +
-  theme(legend.position = "bottom")
-
-
-polls_2016_long |> filter(candidate %in% ("Trump")) |> group_by((state)) |>
-  mean(pct, na.rm = TRUE)
-```
 
 
 # Research Questions
