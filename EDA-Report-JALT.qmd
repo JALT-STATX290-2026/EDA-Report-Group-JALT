@@ -67,13 +67,7 @@ polls_2012_raw <- read_csv(glue("{raw_dir}/state_polls_2012.csv"))
 results_1976_2024_raw <- read_csv(glue("{raw_dir}/1976-2024-president.csv"))
 
 # Read in external data
-income_raw <- read_csv(glue("{raw_dir}/median_household_income.csv"), skip = 4, col_names = TRUE)
-poverty_raw <- read_csv(glue("{raw_dir}/poverty_by_state.csv"), skip = 3, col_names = TRUE)
-unemployment_raw <- read_csv(glue("{raw_dir}/unemployment_by_state.csv"), skip = 3, col_names = TRUE)
-smokefree_rate_raw <- read_csv(glue("{raw_dir}/smokefree_rate_by_state.csv"), skip = 4, col_names = TRUE)
-education_raw <- read_csv(glue("{raw_dir}/education_by_state.csv"), skip = 4, col_names = TRUE)
-incarceration_raw <- read_csv(glue("{raw_dir}/percent_children_with_incarcerated_guardian.csv"), skip = 4, col_names = TRUE)
-
+education_raw <- read_csv(glue("{raw_dir}/ACSST1Y2016.S1501.csv"))
 ```
 
 The raw data needs cleaning to make it workable. We need to alter existing variables, add additional variables, and manage missingness.
