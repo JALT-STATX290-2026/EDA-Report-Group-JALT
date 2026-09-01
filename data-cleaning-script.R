@@ -56,7 +56,8 @@ polls_2012 <- polls_2012_raw |>
 polls_2016 <- polls_2016 |>
   mutate(
     year = str_extract(poll_info, "^\\d{4}"),
-    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)")
+    state = str_extract(poll_info, "(?<=^\\d{4}-).*?(?=-president)") |>
+      fct_recode("washington-dc" = "washington-d-c")
   )
 polls_2012 <- polls_2012 |>
   mutate(
