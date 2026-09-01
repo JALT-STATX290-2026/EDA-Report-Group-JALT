@@ -214,71 +214,46 @@ results_1976_2024_clean <- results_1976_2024_raw |>
   na.omit()
 ```
 
-The socioeconomic datasets gathered externally contain mean family income, percentage of families living below the poverty line, percentage of unemployment, percentage of population covered by 100% smokefree bar laws, and the percentage of population with less than a 9th grade education, all by state. We use these datasets as they could provide valuable insights when analysed together with the polling data.
-
-Upon inspection, they all contain the `fips` variable which represented the state code. We remove this as it is not useful to us. Additionally, they all contain a row for the United States as a whole and Puerto Rico, which are both not included in the other datasets and we also remove accordingly. Lastly, we convert the `state` variable to a factor where the level "district-of-columbia" is recoded as "washington-dc" to be consistent with the other datasets. As all datasets share these problems, we create the `fast_clean()` function to simplify the cleaning code.
+(discussion goes here)
 
 ```{r}
-#| label: socioeconomic-data-clean
+#| label: educational-data-clean
 
 fast_clean <- function(raw_dataset)
 {
-  new_dataset <- raw_dataset |> clean_names() |>
-    filter(!(state %in% c("Puerto Rico", "United States"))) |>
-    select(-fips) |>
-    arrange(state) |>
+  raw_dataset <- raw_dataset |> select(-ncol(raw_dataset))
+  new_names <- raw_dataset[1, ] |> unlist(use.names = FALSE)
+  new_dataset <- raw_dataset |>
+    rename_with(~ new_names, .cols = all_of(names(raw_dataset))) |>
+    slice(-1) |>
+    select(-1) |>
+    clean_names() |>
+    select(-(
+      matches("alone|origin|races|male|female|error|poverty|earnings")
+    )) |>
+    rename(state = geographic_area_name) |>
     mutate(
-      state = factor(str_to_kebab(state)) |> 
-        fct_recode("washington-dc" = "district-of-columbia")
+      state = factor(str_to_kebab(state)) |>
+        fct_recode("washington-dc" = "district-of-columbia"),
+      suppressWarnings(across(-state, as.numeric))
     ) |>
-    na.omit()
+    select(where(~ !all(is.na(.)))) |>
+    rename_with(~ str_remove(.x, "_estimate_")) |>
+    rename_with(~ str_remove(.x, "total")) |>
+    filter(state != "puerto-rico")
+  
   return(new_dataset)
 }
 ```
 
-We use this function to clean all datasets, where variables are renamed accordingly to be more descriptive, and also remove any redundant variables.
+(and here)
 
 ```{r}
-#| label: socioeconomic-data-clean-continued
+#| label: educational-data-clean-continued
 
-income <- income_raw |> fast_clean() |>
-  rename(family_income = dollars) |>
-  select(-3)
-
-poverty <- poverty_raw |> fast_clean() |>
-  rename(percent_families_below_poverty = percent) |>
-  select(-c(3, 4))
-
-unemployment <- unemployment_raw |> fast_clean() |>
-  rename(percent_unemployed = percent) |>
-  select(-c(3, 4))
-
-smokefree_rate <- smokefree_rate_raw |> fast_clean() |>
-  rename(percent_smokefree = percent_1)
-
-education <- education_raw |> fast_clean() |>
-  rename(percent_uneducated = percent) |>
-  select(-people_education_less_than_9th_grade, -c(3, 4))
-
-incarceration <- incarceration_raw |> fast_clean() |>
-  rename(percent_guardian_incarcerated = percent_1) |>
-  mutate(
-    percent_guardian_incarcerated = percent_guardian_incarcerated |>
-      str_remove_all("!") |> as.numeric()
-  )
+education_clean <- education_raw |> fast_clean()
+write_csv(education_clean, "data/clean/education_clean.csv") #educational attainment data
 ```
-
-Finally, we combine all datasets into one, called `socioeconomic_clean` and save it in to the clean data folder.
-
-```{r}
-#| label: socioeconomic-combine-datasets
-
-df_list <- list(income, poverty, unemployment, smokefree_rate, education, incarceration)
-
-socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
-write_csv(socioeconomic_clean, glue("{clean_dir}/socioeconomic.csv")) #Socioeconomic data
-```
-
 
 All of the datasets are now clean and structured in a way that is ready for exploration and analysis.
 
@@ -426,6 +401,30 @@ results_1976_2024_clean |> filter(year %in% (2016)) |>
 Discussion: Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at data by state because of the way the American election system works. The District of Columbia stands out as the large majority of their votes were for Democrat compared to the other states for this year.  This graph would be best to compare with the pre-polling data or to compare over time. 
 
 
+```{r}
+#| label: scatter-graph-polls-2016
+#| echo: FALSE
+#| 
+graphing_set <- polls_2016 |> 
+  select(state, Trump) |>
+  group_by(state) |>
+  summarise(med_trump_percent = median(Trump)) |>
+  cbind(education_clean |> select(23))
+
+graphing_set |> ggplot(aes(x = graphing_set[, 3], y = med_trump_percent)) + 
+  geom_point() +
+  labs(
+    x = "Percentage of the population 25 years and over with bachelor's",
+    y = "Median percentage of Trump voters in the state",
+    title = str_wrap(
+      "Median percentage of Trump votes in the state vs percentage of state population ≥25 years with a bachelor's degree"
+      )
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Discussion: 
 
 # Research Questions
 
