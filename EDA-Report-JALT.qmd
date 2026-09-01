@@ -33,13 +33,9 @@ The dataset `1976-2024-president.csv` contains the state-level results of electi
 
 The pre-polling datasets include samples of the American population separated by state to try represent the population of Americans who will vote in the upcoming election. The results dataset includes the entire population of Americans who did vote in the election that year. The pre-polling data included the percentage of votes for each candidate while the results data included the count of number of votes for a candidate not as a percentage. Subsequently, from pre-polling data being recorded as percentages there is rounding error included, seen in the total percentage higher than 100%. The pre-polling data also included an undecided option which is not in the results data. It should be noted that some of the factors measured in the pre-polling datasets had uneven amount of observations and it is not disclosed if all polls had the option of other. This can be seen in the partisan affiliations where there were roughly twice as many Demarcates then Republican polls (~200 v ~100). 
 
-The additional datasets we have included are
-- `education_by_state.csv`
-- `income_by_state.csv`
-- `percent_children_with_incarcerated_guardian.csv`
-- `poverty_by_state.csv`
-- `smokefree_rate_by_state.csv`
-- `unemployment_by_state.csv`
+In addition, we were also interested in exploring the relationships between various socioeconomic factors and the results contained in the previously mentioned datasets. To briefly explore this, we also included a dataset containing 2016 community survey results provided by the US Census Bureau, which describes various levels of educational attainment for diverse age and ethnicity groups across all states. This is described in greater detail in the following paragraph.
+
+The Educational Attainment (`ACSST1Y2016.S1501.csv`) dataset describes the number of people who have a certain level of educational attainment in various population subgroups (U.S. Census Bureau, n.d.). The population age groups are 18-24, ≥25, 25-34, 35-44, 45-64, and ≥65, and the population ethnicity groups are white, black, American native, asian, Haiwaiian native, other, mixed, and hispanic/latino. Each level of educational attainment group includes the estimate and margin of error for its size (number of people) and the percentage of the population group it makes up, as well as the same measurements for male and female sexes, for every state. The 18-24 age group includes attainment levels: less than high school graduate, high school graduate (includes equivalency), college or associate's degree, and bachelor's degree or higher. The ≥25 age group includes, less than 9th grade 9th to 12th grade, no diploma High school graduate (includes equivalency) college but no degree, associate's degree, bachelor's degree, and graduate or professional degree. All other age and ethnicity groups only include highschool graduate or higher and bachelor's degree or higher.
 
 
 # Description of Data Cleaning
@@ -437,4 +433,4 @@ Discussion: Column graph of percentage of votes by state. Democrat and republica
 
 # Bibliography
 
-1. HDPulse: An Ecosystem of Health Disparities and Specific Populations Health Resources. National Institute on Minority Health and Health Disparities. Created 8/31/2026. Available from https://hdpulse.nimhd.nih.gov.
+1. U.S. Census Bureau, (n.d.), EDUCATIONAL ATTAINMENT , American Community Survey, ACS 1-Year Estimates Subject Tables, Table S1501, accessed on September 1, 2026, https://data.census.gov/table/ACSST1Y2016.S1501?q=education+by+state&y=2016.
