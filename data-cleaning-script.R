@@ -132,8 +132,6 @@ fast_clean <- function(raw_dataset)
       suppressWarnings(across(-state, as.numeric))
     ) |>
     select(where(~ !all(is.na(.)))) |>
-    rename_with(~ str_remove(.x, "_estimate_")) |>
-    rename_with(~ str_remove(.x, "total")) |>
     filter(state != "puerto-rico")
   
   return(new_dataset)
@@ -150,4 +148,5 @@ write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
 write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
-write_csv(education_clean, "data/clean/education_clean.csv") #educational attainment data
+write_csv(results_1976_2024_clean, "data/clean/results_1976_2024_clean.csv") # Results
+write_csv(education_clean, "data/clean/education_clean.csv") # educational attainment data
