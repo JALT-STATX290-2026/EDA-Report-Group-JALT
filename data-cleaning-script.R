@@ -110,55 +110,37 @@ results_1976_2024_clean <- results_1976_2024_raw |>
   select(-c(has_slash, totalvotes)) |>
   filter(if_all(c(candidate, writein, party_simplified), ~ !is.na(.)))
 
-#Cleaning socioeconomic datasets, then combining into one ----------------
+#Cleaning socioeconomic datasets----------------
 
-  #Quick cleaning function for socioeconomic data. Drops Puerto Rico, formats column names correctly and
-  #removes the area code column
+  #Quick cleaning function for socioeconomic data
 fast_clean <- function(raw_dataset)
 {
-  new_dataset <- raw_dataset |> clean_names() |>
-    filter(!(state %in% c("Puerto Rico", "United States"))) |>
-    select(-fips) |>
-    arrange(state) |>
+  raw_dataset <- raw_dataset |> select(-ncol(raw_dataset))
+  new_names <- raw_dataset[1, ] |> unlist(use.names = FALSE)
+  new_dataset <- raw_dataset |>
+    rename_with(~ new_names, .cols = all_of(names(raw_dataset))) |>
+    slice(-1) |>
+    select(-1) |>
+    clean_names() |>
+    select(-(
+      matches("alone|origin|races|male|female|error|poverty|earnings")
+    )) |>
+    rename(state = geographic_area_name) |>
     mutate(
-      state = factor(str_to_kebab(state)) |> 
-        fct_recode("washington-dc" = "district-of-columbia")
+      state = factor(str_to_kebab(state)) |>
+        fct_recode("washington-dc" = "district-of-columbia"),
+      suppressWarnings(across(-state, as.numeric))
     ) |>
-    na.omit()
+    select(where(~ !all(is.na(.)))) |>
+    rename_with(~ str_remove(.x, "_estimate_")) |>
+    rename_with(~ str_remove(.x, "total")) |>
+    filter(state != "puerto-rico")
+  
   return(new_dataset)
 }
 
-#Basic formatting and cleaning, then renaming columns appropriately and removing any unnecessary columns
-income <- income_raw |> fast_clean() |>
-  rename(median_household_income = dollars) |>
-  select(-3)
-
-poverty <- poverty_raw |> fast_clean() |>
-  rename(percent_families_below_poverty = percent) |>
-  select(-c(3, 4))
-
-unemployment <- unemployment_raw |> fast_clean() |>
-  rename(percent_unemployed = percent) |>
-  select(-c(3, 4))
-
-smokefree_rate <- smokefree_rate_raw |> fast_clean() |>
-  rename(percent_smokefree = percent_1)
-
-education <- education_raw |> fast_clean() |>
-  rename(percent_uneducated = percent) |>
-  select(-people_education_less_than_9th_grade, -c(3, 4))
-
-incarceration <- incarceration_raw |> fast_clean() |>
-  rename(percent_guardian_incarcerated = percent_1) |>
-  mutate(
-    percent_guardian_incarcerated = percent_guardian_incarcerated |>
-      str_remove_all("!") |> as.numeric()
-  )
-
-#Combines all datasets into one
-df_list <- list(income, poverty, unemployment, smokefree_rate, education, incarceration)
-
-socioeconomic_clean <- df_list |> reduce(left_join, by = "state")
+#Cleaning the educational attainment dataset
+education_clean <- education_raw |> fast_clean()
 
 
 # Saving data sets as csv in clean folder ---------------------------------
@@ -168,4 +150,4 @@ write_csv(polls_2012, "data/clean/polls_2012_clean.csv")    # clean 2012 data
 write_csv(polls_2016, "data/clean/polls_2016_clean.csv")    # clean 2016 data
 write_csv(polls_2012_long, "data/clean/polls_2012_long_clean.csv")  # 2012 long
 write_csv(polls_2016_long, "data/clean/polls_2016_long_clean.csv")  # 2016 long
-write_csv(socioeconomic_clean, "data/clean/socioeconomic_clean.csv") #socioeconomic data
+write_csv(education_clean, "data/clean/education_clean.csv") #educational attainment data
