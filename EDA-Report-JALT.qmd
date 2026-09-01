@@ -437,4 +437,4 @@ Discussion: Column graph of percentage of votes by state. Democrat and republica
 
 # Bibliography
 
-1. 
+1. HDPulse: An Ecosystem of Health Disparities and Specific Populations Health Resources. National Institute on Minority Health and Health Disparities. Created 8/31/2026. Available from https://hdpulse.nimhd.nih.gov.
