@@ -423,14 +423,12 @@ graphing_set |> ggplot(aes(
   )) + 
   geom_point(color = "darkcyan", shape = 1, stroke = 1, alpha = 0.9) +
   labs(
-    x = "Percentage of the population who are 25 years and over with a bachelor's or higher",
-    y = "Median percentage of predicted Trump voters in the state",
-    title = str_wrap(
-      "Median percentage of predicted Trump votes in the state vs percentage of state population ≥25 years with a bachelor's degree or higher"
-      )
+    x = "% of the state who are 25 years and up with a bachelor's or higher",
+    y = "Med. percent of Trump votes in the state",
+    title = "Med. percentage of Trump votes vs \npercentage of state population ≥25 years \nwith a bachelor's degree or higher"
   ) +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.title = element_text(hjust = 0.5, size = 11)) +
   scale_x_continuous(limits = c(0, NA)) +
   scale_y_continuous(limits = c(0, NA))
 ```
@@ -457,7 +455,7 @@ graphing_set |> ggplot(aes(
 ```
 ```{r}
 #| label: sd-calculation
-print(glue("Standard deviation of the total-prepolling surveys in 2016 by state: {sd(graphing_set$sample_size) |> round(1)}"))
+print(sd(graphing_set$sample_size) |> round(1))
 ```
 
 
