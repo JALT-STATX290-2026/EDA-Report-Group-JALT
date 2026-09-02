@@ -454,17 +454,21 @@ graphing_set |> ggplot(aes(
     title = "Total pre-polling surveys in 2016 by state"
   ) +
   scale_y_continuous(breaks = seq(0, 100, by = 10))
+```
+```{r}
+#| label: sd-calculation
 print(glue("Standard deviation of the total-prepolling surveys in 2016 by state: {sd(graphing_set$sample_size) |> round(1)}"))
 ```
 
 
-
 # Research Questions
 
-1. How representative were the opinion polls of the election results?
-
+1. How representative were the opinion polls (pre-polling data) of the election results?
+This particular question is valuable to explore further as opinion polls can shape public discourse, media narratives, and even voter behavior in the time before an election. If pre-polls differ greatly from the actual results, it may affect trust in polling institutions and in the media that reports on them. Further exploring how representative pre-polls were of the actual results allows us to identify weaknesses in the methods of these opinion polls (for instance, sampling bias, non-response bias, and weighting errors), so that our findings may inform future methods. 
 
 2. Which socioeconomic factors are the most reliable and important predictors of election results?
+Exploratory analysis of the educational attainment data shows that it is important to understand the how socioeconomic factors affect voting behaviour, and we wish to explore this further by examining other factors such as income, employment status, age, etc. Additionally, it can also reveal broader trends, such as growing political inequality across different classes, and can inform discussions about representation in general across these classes. However, considering the nature of this particular topic, conclusions made could be damaging and perpetuate harmful stereotypes about certain socioeconomic groups especially if findings are misused. It is also important to note that aggregate data, like the datasets explored previously, cannot be used to predict or make any claims about the behaviour of any single voter.
+
 
 # Bibliography
 
