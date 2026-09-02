@@ -19,7 +19,7 @@ execute:
 
 # Introduction
 
-This report explores 2012 and 2016 US state-level pre-election polling data, and state-level election results since 1976. In addition, 2016 state-level education attainment data is also explored briefly.
+This report explores 2012 and 2016 US state-level pre-election polling data, and state-level election results since 1976. In addition, 2016 state-level education attainment data is also explored briefly. The GitHub repository containing all datasets, cleaning scripts, and other files can be accessed at: https://github.com/JALT-STATX290-2026/EDA-Report-Group-JALT.
 
 The 2012 and 2016 data was obtained from HuffPost Pollster at [https://projects.huffingtonpost.com](https://projects.huffingtonpost.com). There are three main datasets:
 
