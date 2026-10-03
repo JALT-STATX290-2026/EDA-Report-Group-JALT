@@ -13,57 +13,6 @@ format: html
 
 
 
-```{r}
-Votes_2024 <- filter(results_1976_2024_clean, year == "2024" & party_detailed == "democrat")
-Votes_2024_merged <- merge(x = Votes_2024, y = results_1976_2024_clean)
-```
-
-
-```{r}
-#| label: scatter-graph-polls-2016
-#| echo: FALSE
-
-Votes_2024_merged |> ggplot(aes(
-  x = family_income,
-  y = percent_voted
-  )) + 
-  geom_point(color = "darkcyan", shape = 1, stroke = 1, alpha = 0.9) +
-  labs(
-    x = "Family Income",
-    y = "Democrated Vote percentage",
-    title = "family income and democrate vote percentage"
-  ) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 11)) +
-  scale_x_continuous(limits = c(75000, NA)) +
-  scale_y_continuous(limits = c(0, NA))
-```
-
-```{r}
-Votes_2024_2 <- filter(results_1976_2024_clean, year == "2024" & party_detailed == "republican")
-Votes_2024_merged_2 <- merge(x = Votes_2024_2, y = socioeconomic_clean, by = "state")
-```
-
-
-```{r}
-#| label: scatter-graph-polls-2016
-#| echo: FALSE
-
-Votes_2024_merged_2 |> ggplot(aes(
-  x = family_income,
-  y = percent_voted
-  )) + 
-  geom_point(color = "darkcyan", shape = 1, stroke = 1, alpha = 0.9) +
-  labs(
-    x = "Family Income",
-    y = "Republican Vote percentage",
-    title = "family income and republican vote percentage"
-  ) +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 11)) +
-  scale_x_continuous(limits = c(75000, NA)) +
-  scale_y_continuous(limits = c(0, NA))
-```
 
 ```{r}
 Votes_2024_3 <- filter(results_1976_2024_clean, year == "2024")
