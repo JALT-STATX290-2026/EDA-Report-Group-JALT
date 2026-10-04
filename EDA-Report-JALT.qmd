@@ -19,9 +19,9 @@ execute:
 
 # Introduction
 
-This report explores 2012 and 2016 US state-level pre-election polling data, and state-level election results since 1976. In addition, 2016 state-level education attainment data is also explored briefly. The GitHub repository containing all datasets, cleaning scripts, and other files can be accessed at: [https://github.com/JALT-STATX290-2026/EDA-Report-Group-JALT](https://github.com/JALT-STATX290-2026/EDA-Report-Group-JALT).
+This report explores 2012 and 2016 US state-level pre-election polling data, and state-level election results since 1976. In addition, 2016 state-level education attainment data is also explored briefly. The GitHub repository containing all datasets, cleaning scripts, and other files can be accessed at: <https://github.com/JALT-STATX290-2026/EDA-Report-Group-JALT>.
 
-The 2012 and 2016 data was obtained from HuffPost Pollster at [https://projects.huffingtonpost.com](https://projects.huffingtonpost.com). There are three main datasets:
+The 2012 and 2016 data was obtained from HuffPost Pollster at <https://projects.huffingtonpost.com>. There are three main datasets:
 
 - `state_polls_2012.csv`
 - `state_polls_2016.csv`
@@ -29,14 +29,31 @@ The 2012 and 2016 data was obtained from HuffPost Pollster at [https://projects.
 
 In the raw datasets `state_polls_2012.csv` and `state_polls_2016.csv`, each row represents a separate poll containing the candidates for that year, poll ID, pollster, the polling start and end dates, sample sub-population and size, polling mode (method), partisanship, and partisan affiliation.
 
-The dataset `1976-2024-president.csv` contains the state-level results of elections from 1976 to 2024. The included file `codebook-us-president-1976-2020.md` provides detailed descriptions of each variable in this dataset. It is important to note that the codebook is not up to date, as the title date range does not match the data range. 
+| Variable | Description |
+|---------------------|---------------------------------------------------|
+| poll_info | Information on when and where the poll took place, in the format year-state-candidates |
+| poll_id | Identification code of the poll |
+| pollster | Pollster which conducted the poll |
+| start_date |  |
+| end_date |  |
+| sample_subpopulation |  |
+| sample_size | Number of people polled |
+| mode | Method used to poll, listed as; Automated Phone, IVR/Live Phone, IVR/Online, Internet, Live Phone, Live Phone/Online, Mail, or Mixed |
+| partisanship | Nonpartisan, Pollster, or Sponsor |
+| partisan_affiliation | Dem, Rep, None, or Other |
+| days_to_election |  |
+| year | Year in which the poll took place |
+| state | State in which the poll took place |
+| candidate |  |
+| pct | Percentage |
 
-The pre-polling datasets include samples of the US population across all states and represents the predicted population of Americans who will vote in the upcoming election. The results dataset includes the entire population of US citizens who actually voted in the election that year. The pre-polling data included the percentage of votes for each candidate while the results data included the number of votes for a candidate instead. Subsequently, from pre-polling data being recorded as percentages there is rounding error included, seen in the total percentage higher than 100%. The pre-polling data also included an undecided option which is not in the results data. It should be noted that some of the factors measured in the pre-polling datasets had uneven amount of observations and it is not disclosed if all polls had the option of other. This can be seen in the partisan affiliations where there were roughly twice as many Demarcates then Republican polls (~200 v ~100). 
+The dataset `1976-2024-president.csv` contains the state-level results of elections from 1976 to 2024. The included file `codebook-us-president-1976-2020.md` provides detailed descriptions of each variable in this dataset. It is important to note that the codebook is not up to date, as the title date range does not match the data range.
+
+The pre-polling datasets include samples of the US population across all states and represents the predicted population of Americans who will vote in the upcoming election. The results dataset includes the entire population of US citizens who actually voted in the election that year. The pre-polling data included the percentage of votes for each candidate while the results data included the number of votes for a candidate instead. Subsequently, from pre-polling data being recorded as percentages there is rounding error included, seen in the total percentage higher than 100%. The pre-polling data also included an undecided option which is not in the results data. It should be noted that some of the factors measured in the pre-polling datasets had uneven amount of observations and it is not disclosed if all polls had the option of other. This can be seen in the partisan affiliations where there were roughly twice as many Demarcates then Republican polls (\~200 v \~100).
 
 In addition, we were also interested in exploring the relationships between various socioeconomic factors and the results contained in the previously mentioned datasets. To briefly explore this, we also included a dataset containing 2016 community survey results provided by the US Census Bureau, which describes various levels of educational attainment for diverse age and ethnicity groups across all states. This is described in greater detail in the following paragraph.
 
 The Educational Attainment (`ACSST1Y2016.S1501.csv`) dataset describes the number of people who have a certain level of educational attainment in various population subgroups (U.S. Census Bureau, n.d.). The population age groups are 18-24, ≥25, 25-34, 35-44, 45-64, and ≥65, and the population ethnicity groups are white, black, American native, asian, Haiwaiian native, other, mixed, and hispanic/latino. Each level of educational attainment group includes the estimate for its size, the percentage of the wider population group it makes up, margins of error (MOE) as well as the same measurements for male and female sexes, for every state. The 18-24 age group includes attainment levels: less than high school graduate, high school graduate (includes equivalency), college or associate's degree, and bachelor's degree or higher. The ≥25 age group includes, less than 9th grade 9th to 12th grade, no diploma High school graduate (includes equivalency) college but no degree, associate's degree, bachelor's degree, and graduate or professional degree. All other age and ethnicity groups only include highschool graduate or higher and bachelor's degree or higher. Lastly, it also contains poverty rates and median earnings in the last 12 months for each level of educational attainment.
-
 
 # Description of Data Cleaning
 
@@ -52,7 +69,6 @@ library(lubridate)   # dates
 library(glue)        # easy string manipulation
 library(janitor)     # for the clean_names() function
 ```
-
 
 ```{r}
 #| label: setup-read-data
@@ -98,7 +114,6 @@ polls_2012 <- polls_2012_raw |>
   )
 ```
 
-
 In the first column `poll_info`, the text string contains useful information about the **year** and **state** of each poll. However, the format of this variable makes filtering by either of these factors tedious. So, we should extract the year and state, and create a variable column for each. We do this for both the 2012 and 2016 datasets.
 
 Although it may seem redundant to include the year as a separate variable now, when the datasets are combined later on, it will be useful to already have the distinction between the two be made.
@@ -142,7 +157,6 @@ polls_2012_long <- polls_2012 |>
                names_to = "candidate", values_to = "pct")
 ```
 
-
 From inspection, there are some `sample_size` values entered as "-1". These should be NAs, rather than being treated as valid data points as they skew the mean slightly toward zero. First, we need to check how many rows are affected.
 
 ```{r}
@@ -154,7 +168,6 @@ polls_2012_long |>
 polls_2016_long |>
   filter(sample_size == -1) |> count()
 ```
-
 
 There are 4 rows in `polls_2012_long` and 6 in `polls_2016_long` with a negative sample size, which we converted to `NA`s.
 
@@ -174,7 +187,7 @@ polls_long <- bind_rows(polls_2012_long, polls_2016_long) |>
 
 We also need to clean `results_1976_2024_raw`. There are several pointless variables, `state_fips`, `state_ic`, `state_cen`,`state_po`, `notes`, and `office`. The latter four are mainly for state identification purposes and not useful for statistical analysis purposes at all. The variables `notes` and `office` are also useless as they either contain all NA's or the same value for all observations. Then, the names each level of the categorical variables (`state`, `party_simplified`, `party_detailed`) are first cleaned using `str_to_kebab` before being converted to factors. Additionally, we create the variable `percent_voted` to replace `candidate_votes` by dividing `candidate_votes` by `total_votes` as it is more useful for analysis and also saves us from calculating the percentage every time we need it.
 
-The process for cleaning the `version` variable is significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we start by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This creates two new columns which  then become the new `version` variable. The first is defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. We then combine these into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values are omitted.
+The process for cleaning the `version` variable is significantly more involved. While it is intended to contain dates, it contains a mix of strings of the form "YYYYMMDD" and "DD/MM/YYYY". To convert everything to a date of form YMD, we must pass strings of form "YYYYMMDD" through `ymd()`. On the other hand, we must also convert strings of form "DD/MM/YYYY" to "DD-MM-YYYY", then pass them through `dmy()`. Note that this is necessary as "DD/MM/YYYY" is not a valid format for the `dmy()` function. To implement this, we start by defining the temporary boolean variable `has_slash` which is only true when a slash is detected in a string. This creates two new columns which then become the new `version` variable. The first is defined as follows: when `has_slash` is true, slashes are replaced with "-" before being passed through `dmy()`, and converted to an NA otherwise. As for the second: when `has_slash` is true, it is converted to NA, and passed through `ymd()` otherwise. We then combine these into one using `coalesce()` which only keeps non-NA values from both columns. Finally, missing all rows with missing values are omitted.
 
 ```{r}
 #| label: clean-results-1976-2024
@@ -200,7 +213,7 @@ results_1976_2024_clean <- results_1976_2024_raw |>
 
 The final dataset to be cleaned is the educational attainment (`ACSST1Y2016.S1501.csv`) dataset. In contrast, its cleaning process is significantly more laborious to the previous sets. For background, is intended to be viewed on the US Census Bureau website as a table with nested column headers, where each row contains measurements relating to the group size for each educational attainment level (i.e group size itself, group size MOE, percentage, and percentage MOE) for each state. On the other hand, the provided CSV file is a data-frame with no nested column headers and contains the same measurements but in each column instead, which causes a number of issues for cleaning.
 
-Two of the most immediate issues are that the last column is completely missing, and that the variable names are not descriptive (for instance, the third column is called "S1501_C01_001E"), while the intended variable names are in the first row. Thus, we removed the last column, and renamed all variables using the first row before removing it as well. We then converted the variable names to snake-case. Next, we wish to remove all columns containing data for each race and sex group as they are not socioeconomic factors, and those relating to poverty or earnings as they are not relevant to the rest of the data. To do this, we found several key words (seen below) that are common across most of these columns, then removed all columns whose name contains at least one of them. Next, we renamed `geographic_area_name` to `state` and cleaned it using a similar process to the ones seen previously. Now, there are still plenty of columns whose values are all NA (denoted as "(X)" in the raw dataset) which we cleaned by converting all columns to numeric and removing any whose values are all NA. The final step is to remove the row containing data for Puerto Rico as it is not included in our other datasets. 
+Two of the most immediate issues are that the last column is completely missing, and that the variable names are not descriptive (for instance, the third column is called "S1501_C01_001E"), while the intended variable names are in the first row. Thus, we removed the last column, and renamed all variables using the first row before removing it as well. We then converted the variable names to snake-case. Next, we wish to remove all columns containing data for each race and sex group as they are not socioeconomic factors, and those relating to poverty or earnings as they are not relevant to the rest of the data. To do this, we found several key words (seen below) that are common across most of these columns, then removed all columns whose name contains at least one of them. Next, we renamed `geographic_area_name` to `state` and cleaned it using a similar process to the ones seen previously. Now, there are still plenty of columns whose values are all NA (denoted as "(X)" in the raw dataset) which we cleaned by converting all columns to numeric and removing any whose values are all NA. The final step is to remove the row containing data for Puerto Rico as it is not included in our other datasets.
 
 Lastly, this was made into a function that can be adapted to clean other datasets from the same source in order to make future cleaning less arduous.
 
@@ -256,8 +269,6 @@ write_csv(results_1976_2024_clean, "data/clean/results_1976_2024_clean.csv") # R
 write_csv(education_clean, "data/clean/education_clean.csv") #educational attainment data
 ```
 
-
-
 # Exploratory Data Analysis
 
 Using these datasets, we produced a number of plots exploring various relationships in all datasets, where each is followed by a brief discussion.
@@ -271,7 +282,6 @@ polls_2012 |> count(state, sort = TRUE) |> print(n = Inf)
 ```
 
 Discussion: In 2016, 51 states were included and in 2012, 48 states were included in the pre-polling data. There was also a large range of the number of polls per state. For example, in 2012 there were 110 polls from Ohio compared to the single poll from Alabama. It means that any nation wide statement would be more biased towards the states that had more polls.
-
 
 ```{r}
 #| label: Candidates 2012 v Percentage (pre-polling)
@@ -356,7 +366,7 @@ ggplot(polls_2012, aes(x = mode, y = Romney, fill = mode)) +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ```
 
-Discussion: The method of voting influences the percentage of votes for a candidate as the median changes with the method of voting and along with the interquartile range. There is also overlap as "mixed" could include multiple methods. To improve this graph Live Phone/Online could be included in mixed as there looks to be only 1 data point. It will also need to be considered the different demographics for each methods. For example the demographic that will answer by mail will be different from the ones through the internet. This would mean that the correlation may be within demographics not the methods of voting. 
+Discussion: The method of voting influences the percentage of votes for a candidate as the median changes with the method of voting and along with the interquartile range. There is also overlap as "mixed" could include multiple methods. To improve this graph Live Phone/Online could be included in mixed as there looks to be only 1 data point. It will also need to be considered the different demographics for each methods. For example the demographic that will answer by mail will be different from the ones through the internet. This would mean that the correlation may be within demographics not the methods of voting.
 
 ```{r}
 #| label: plot-results-2016-percentage-of-state-votes
@@ -370,8 +380,7 @@ results_1976_2024_clean |> filter(year %in% (2016)) |>
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ```
 
-Discussion: Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards Democrat and Republican candidates. The biggest limitation of this graph is if it was to be used to calculate the percentages of votes for a candidate overall will be different to the American voting system which gives a different weight per state by population, which is not represented in the historgram. This could be adjusted for by giving each state a weight. A similar graph can be made for other years. These results can be compared to the polling data. 
-
+Discussion: Histogram of percentage of votes in each state for each party. Graph indicates most votes going towards Democrat and Republican candidates. The biggest limitation of this graph is if it was to be used to calculate the percentages of votes for a candidate overall will be different to the American voting system which gives a different weight per state by population, which is not represented in the historgram. This could be adjusted for by giving each state a weight. A similar graph can be made for other years. These results can be compared to the polling data.
 
 ```{r}
 #| label: plot-results-party-results-over-time
@@ -386,7 +395,7 @@ results_1976_2024_clean |>
   theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5))
 ```
 
-Discussion: Column graph of votes over time. Democrat and republican parties got majority of the votes. Trend of more people voting over time probably due to population increase. Does not appear to be an trend over time of what parties people vote for. This graph has similar limitations about the weighting of states. 
+Discussion: Column graph of votes over time. Democrat and republican parties got majority of the votes. Trend of more people voting over time probably due to population increase. Does not appear to be an trend over time of what parties people vote for. This graph has similar limitations about the weighting of states.
 
 ```{r}
 #| label: col-graph-results-2016-percentage-votesin each state
@@ -401,8 +410,7 @@ results_1976_2024_clean |> filter(year %in% (2016)) |>
   theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = element_text(hjust = 0.5)) 
 ```
 
-Discussion: Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at data by state because of the way the American election system works. The District of Columbia stands out as the large majority of their votes were for Democrat compared to the other states for this year.  This graph would be best to compare with the pre-polling data or to compare over time. 
-
+Discussion: Column graph of percentage of votes by state. Democrat and republican parties have majority of the votes. This way of representing the data is less limited as it make more sense to look at data by state because of the way the American election system works. The District of Columbia stands out as the large majority of their votes were for Democrat compared to the other states for this year. This graph would be best to compare with the pre-polling data or to compare over time.
 
 ```{r}
 #| label: scatter-graph-polls-2016
@@ -453,21 +461,18 @@ graphing_set |> ggplot(aes(
   ) +
   scale_y_continuous(breaks = seq(0, 100, by = 10))
 ```
+
 ```{r}
 #| label: sd-calculation
 print(sd(graphing_set$sample_size) |> round(1))
 ```
 
-
 # Research Questions
 
-1. How representative were the opinion polls (pre-polling data) of the election results?
-This particular question is valuable to explore further as opinion polls can shape public discourse, media narratives, and even voter behavior in the time before an election. If pre-polls differ greatly from the actual results, it may affect trust in polling institutions and in the media that reports on them. Further exploring how representative pre-polls were of the actual results allows us to identify weaknesses in the methods of these opinion polls (for instance, sampling bias, non-response bias, and weighting errors), so that our findings may inform future methods. 
+1.  How representative were the opinion polls (pre-polling data) of the election results? This particular question is valuable to explore further as opinion polls can shape public discourse, media narratives, and even voter behavior in the time before an election. If pre-polls differ greatly from the actual results, it may affect trust in polling institutions and in the media that reports on them. Further exploring how representative pre-polls were of the actual results allows us to identify weaknesses in the methods of these opinion polls (for instance, sampling bias, non-response bias, and weighting errors), so that our findings may inform future methods.
 
-2. Which socioeconomic factors are the most reliable and important predictors of election results?
-Exploratory analysis of the educational attainment data shows that it is important to understand the how socioeconomic factors affect voting behaviour, and we wish to explore this further by examining other factors such as income, employment status, age, etc. Additionally, it can also reveal broader trends, such as growing political inequality across different classes, and can inform discussions about representation in general across these classes. However, considering the nature of this particular topic, conclusions made could be damaging and perpetuate harmful stereotypes about certain socioeconomic groups especially if findings are misused. It is also important to note that aggregate data, like the datasets explored previously, cannot be used to predict or make any claims about the behaviour of any single voter.
-
+2.  Which socioeconomic factors are the most reliable and important predictors of election results? Exploratory analysis of the educational attainment data shows that it is important to understand the how socioeconomic factors affect voting behaviour, and we wish to explore this further by examining other factors such as income, employment status, age, etc. Additionally, it can also reveal broader trends, such as growing political inequality across different classes, and can inform discussions about representation in general across these classes. However, considering the nature of this particular topic, conclusions made could be damaging and perpetuate harmful stereotypes about certain socioeconomic groups especially if findings are misused. It is also important to note that aggregate data, like the datasets explored previously, cannot be used to predict or make any claims about the behaviour of any single voter.
 
 # Bibliography
 
-1. U.S. Census Bureau, (n.d.), EDUCATIONAL ATTAINMENT , American Community Survey, ACS 1-Year Estimates Subject Tables, Table S1501, accessed on September 1, 2026, https://data.census.gov/table/ACSST1Y2016.S1501?q=education+by+state&y=2016.
+1.  U.S. Census Bureau, (n.d.), EDUCATIONAL ATTAINMENT , American Community Survey, ACS 1-Year Estimates Subject Tables, Table S1501, accessed on September 1, 2026, https://data.census.gov/table/ACSST1Y2016.S1501?q=education+by+state&y=2016.
