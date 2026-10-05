@@ -16,7 +16,7 @@ format: html
 
 ```{r}
 Votes_2024_3 <- filter(results_1976_2024_clean, year == "2024")
-Votes_2024_merged_3 <- merge(x = Votes_2024_3, y = socioeconomic_clean, by = "state")
+Votes_2024_merged_3 <- merge(x = Votes_2024_3, y = socioeconomic_full, by = "state")
 ```
 
 
@@ -124,5 +124,18 @@ Votes_2024_merged_3 |> ggplot(aes(
   scale_x_continuous(limits = c(0, NA)) +
   scale_y_continuous(limits = c(0, NA))
 ```
+
+
+```{r}
+socioeconomic_full <- read_csv(glue("{clean_dir}/socioeconomic_full.csv"))
+
+
+
+
+
+
+
+```
+
 
 
